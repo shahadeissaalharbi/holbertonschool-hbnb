@@ -30,8 +30,7 @@ This document presents sequence diagrams for four essential API operations in th
 These diagrams demonstrate the interaction patterns for core HBnB operations:
 
 * **User Registration:** Focuses on data validation and secure password storage
-* **Place Creation:** Shows authentication flow and relationship building with amenities
-* **Review Submission:** Enforces business rules preventing owners from reviewing their properties
-* **Fetching Places:** Demonstrates query filtering and data aggregation from multiple tables
+* **Place Creation:** Validates owner existence and listing details before persistence
+* **Review Submission:** Enforces uniqueness, preventing duplicate reviews from the same user
+* **Fetching Places:** Demonstrates query filtering based on search criteria
 
-Each operation follows the layered architecture with clear separation between presentation, business logic, and data persistence concerns.
