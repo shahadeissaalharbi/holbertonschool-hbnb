@@ -1,150 +1,302 @@
-# HBnB - Part 1
+# HBnB Evolution: Technical Documentation and Architectural Blueprint
 
-## Description
-
-This project is the first part of the HBnB Evolution application, an AirBnB-like platform.
-The goal of this part is to produce comprehensive technical documentation that will serve
-as the blueprint for all subsequent implementation phases. No code is written here.
-The deliverable is a set of UML diagrams and explanatory notes covering the system
-architecture, business logic design, and API interaction flows.
+This document serves as the comprehensive technical blueprint and architectural specification for the HBnB Evolution marketplace platform. It synthesizes the conceptual, logical, and physical design phases of the system, acting as a unified guide for implementation teams to maintain strict layer separation, solid data boundaries, and reliable operational workflows.
 
 ---
 
-## Application Overview
+## 1. Project Introduction and Scope
 
-HBnB allows users to:
-- Register and manage their profiles
-- List properties (places) with details like price, location, and amenities
-- Leave reviews with ratings and comments on places they have visited
-- Browse and filter available places
+The HBnB Evolution platform is designed as an enterprise-grade short-term rental marketplace enabling user profiling, dynamic property indexing, structured feature (amenity) grouping, and cross-referenced transactional feedback processing.
 
-All entities (User, Place, Review, Amenity) share a common base that provides
-a unique UUID identifier and creation/update timestamps for auditing purposes.
+This documentation bridges the gap between early structural planning and low-level code implementation. It outlines systemic boundaries, class inheritances, structural modular dependencies, and runtime data flows, ensuring all implementation variants adhere strictly to software design best practices.
 
 ---
 
-## Tasks
+## 2. File and Repository Structure
 
-### Task 0 - High-Level Package Diagram
+The physical assets and design documentation artifacts are distributed across the repository following a clean modular structure. This layout ensures predictable navigation and clear decoupling between different design tasks:
 
-Created a package diagram illustrating the three-layer architecture of the application
-and how the layers communicate through the Facade pattern.
-
-The three layers are:
-
-- **Presentation Layer**: Handles all interaction with the client. Contains the REST API
-  endpoints and service classes (UserService, PlaceService, ReviewService, AmenityService).
-  This layer is responsible for receiving requests, validating input format, and returning
-  HTTP responses.
-
-- **Business Logic Layer**: Contains the core models (User, Place, Review, Amenity) and
-  enforces all business rules. This layer decides what is valid and what is not, independent
-  of how the data arrives or where it is stored.
-
-- **Persistence Layer**: Responsible for storing and retrieving data. Provides repository
-  classes (UserRepository, PlaceRepository, etc.) that abstract all database operations
-  from the rest of the application.
-
-The **Facade pattern** is represented by a single HBnBFacade interface that sits between
-the Presentation Layer and the Business Logic Layer. This means the API never directly
-instantiates or queries model objects, it always goes through the facade. This keeps the
-layers decoupled and makes the system easier to maintain and test.
-
----
-
-### Task 1 - Detailed Class Diagram for the Business Logic Layer
-
-Created a class diagram showing the four core entities, their attributes, methods,
-and relationships.
-
-**BaseModel**
-An abstract base class inherited by all entities. Provides:
-- id (UUID4): unique identifier auto-generated on creation
-- create_at (datetime): timestamp set at creation
-- update_at (datetime): timestamp updated on every save
-- create(), update(), delete() are utility methods
-
-**User**
-Represents a registered user of the platform. Key attributes include first name,
-last name, email, password.
-Methods cover registration, profile update, deletion, and admin.
-A user can own multiple places and write multiple reviews.
-
-**Place**
-Represents a property listing. Stores a title, description, price, and geographic
-coordinates (latitude and longitude). Each place is linked to its owner (User) via
-an owner_id foreign key. A place can have many reviews and many amenities.
-Methods cover creation, update, deletion, and listing associated amenities.
-
-**Review**
-Represents a user's evaluation of a place. Contains a numeric rating and a text comment,
-linked to both a user_id and a place_id. A review cannot exist without both references.
-Methods cover submission, update, and deletion.
-
-**Amenity**
-Represents a feature that can be associated with one or more places (e.g., Wi-Fi, pool,
-parking). Amenities exist independently of any specific place, so the relationship between
-Place and Amenity is an aggregation, not a composition.
-Methods cover creation, update, deletion, and listing.
-
-**Relationships**
-- All entities inherit from BaseModel (generalization)
-- User owns zero or more Places (one-to-many association)
-- User writes zero or more Reviews (one-to-many association)
-- Place receives zero or more Reviews (one-to-many association)
-- Place has zero or more Amenities, and Amenities can belong to many Places (many-to-many aggregation)
-
----
-
-### Task 2 - Sequence Diagrams for API Calls
-
-Created four sequence diagrams showing the step-by-step flow of information between
-the Presentation Layer, Business Logic Layer, and Persistence Layer for four key API calls.
-
-**1. User Registration (POST /api/v1/users)**
-The client submits registration data. The API validates the request format and calls
-the facade. The Business Logic layer checks that the email is not already taken by
-querying the database, then hashes the password, assigns a UUID and timestamps, and
-saves the new user. A success response with the created user data is returned.
-
-**2. Place Creation (POST /api/v1/places)**
-The client submits place details along with an authentication token. The API authenticates
-the user before proceeding. The facade passes the data to the Place model, which validates
-business rules (e.g., price must be positive, coordinates must be in valid range), assigns
-a UUID and timestamps, links the owner_id, and saves the record. The created place data
-is returned with a 201 status.
-
-**3. Review Submission (POST /api/v1/places/{place_id}/reviews)**
-The client submits a rating and comment for a specific place. The API authenticates the
-user. The facade first verifies that the target place exists, then passes the data to the
-Review model. Business rules are enforced: the rating must be between 1 and 5, the comment
-cannot be empty, and a user cannot review their own place. If valid, the review is saved
-and returned with a 201 status.
-
-**4. Fetching a List of Places (GET /api/v1/places)**
-The client sends a GET request with optional query parameters (e.g., max price, amenity
-filter). The API parses and sanitizes the parameters, then passes them to the facade.
-The Business Logic layer translates the filters into a database query via the Persistence
-Layer. The returned records are serialized (sensitive fields excluded) and returned to
-the client as a list with a 200 status.
-
----
-
-## File Structure
-
-```
+```text
 hbnb/
- part1/
-	-README.md
-	-package diagram
-	-class diagram
-	-sequence diagram
-```
+└── part1/
+    ├── README.md
+    ├── package diagram
+    ├── class diagram
+    └── sequence diagram
+
+Allocation of Deliverables
+part1/: The dedicated root container for Phase 1 architectural design deliverables.
+
+README.md: This master document, serving as the central explanatory guide and system documentation compiler.
+
+package diagram: Visual design specifications detailing the high-level layered software boundaries and design patterns.
+
+class diagram: Detailed object-oriented entities layout governing the Business Logic layer properties, constraints, and operational cardinalities.
+
+sequence diagram: Dynamic execution sequence charts mapping out request ingress paths across major platform workflows.
 
 ---
 
-## Authors
+### [Part 2: High-Level Architecture and Package Diagram Placeholder]
+```text
+---
 
-- Lama Almazroa 
-- Noura Alotibi
-- Shahad Alharbi
+## 3. High-Level Architecture and Package Layout
+
+The application relies on a strict implementation of a Decoupled Three-Layer Architecture Pattern. This architectural blueprint isolates functional responsibilities, guarantees horizontal system expandability, and safeguards the central business core from volatile peripheral structural changes.
+
+### 3.1 Layered Framework Specifications
+* **Presentation Layer (Services & API Packages)**: Functions as the primary application ingress gateway. It intercepts client-side transport execution streams, enforces uniform URI routing controls, acts as the payload marshalling agent, and delivers standardized HTTP responses back to calling clients.
+* **Business Logic Layer (Models Core Package)**: Functions as the centralized analytical engine of the platform. It holds data entity structures, enforces business rules, evaluates attribute invariants, and defines model behaviors.
+* **Persistence Layer (Database & Repositories Packages)**: Abstracts all state persistence lifecycles. It encapsulates state transformations, processes native persistence reads/writes, and manages connection engines via abstract generic data collection arrays.
+
+### 3.2 Package Diagram Visual Representation
+
+<img width="544" height="964" alt="Package Diagram" src="https://github.com/user-attachments/assets/77e46da6-c0ee-47a7-ba49-a56376c2068f"
+/>
+
+3.3 Design Pattern Integration: Structural Facade Broker
+To bridge structural state delivery from presentation routers into complex domain packages securely, the system introduces a dedicated Facade Pattern mediator interface.
+
++-------------------------------------------------------------+
+|                     PRESENTATION LAYER                      |
+|            [Services Package]    |    [API Package]         |
++------------------------------+------------------------------+
+                               |
+                               | Unidirectional Facade Signals
+                               v
++-------------------------------------------------------------+
+|                    BUSINESS LOGIC LAYER                     |
+|  [BaseModel]  [User]  [Place]  [Amenity]  [Review] Packages |
++------------------------------+------------------------------+
+                               |
+                               | Database Operations Abstraction
+                               v
++-------------------------------------------------------------+
+|                      PERSISTENCE LAYER                      |
+|          [Database Engine]   |   [Repositories]             |
++-------------------------------------------------------------+
+
+Architectural Rationale
+Decoupling Contracts: The internal domain code may undergo optimization or schema adaptation without introducing breaking adjustments to public-facing REST controllers.
+
+Unified Interface: API controller classes invoke simple, singular unified operations from the facade broker instead of handling multi-object initialization chains.
+
+### [Part 3: Business Logic Class Layout and Diagram Placeholder]
+```text
+---
+
+## 4. Business Logic Layer Deep-Dive: Domain Class Layout
+
+The architectural design for the underlying domain classes relies on strict object-oriented inheritance models, structured visibility parameters, and definitive relational dependencies.
+
+### 4.1 Class Diagram Visual Representation
+
+<img width="1337" height="811" alt="Class Digram" src="https://github.com/user-attachments/assets/a2e47d9c-6dcb-4130-b5ef-1eed450f1fce" />
+
+4.2 Class Definitions and Variable Properties
+4.2.1 BaseModel (Abstract Base Interface Class)
+Description: The master primitive class defining foundational lifecycle tracking values mandatory across every persistence element.
+
+Public Attributes:
+
+id: UUIDv4 primary key format token. Establishes globally immutable unique identities.
+
+Create_at: datetime object indicating initial creation runtime instantiation.
+
+Update_at: datetime object tracking active attribute variance changes over time.
+
+Public Methods:
+
+Create(): Instantiates memory mapping and anchors system creation timestamps.
+
+Update(): Advances update metrics upon application state adjustment commits.
+
+Delete(): Deallocates system state or flags records for logical soft deletion.
+
+4.2.2 User Class
+Description: Manages user actor registration models, administrative access tracking, and security credential vectors.
+
+Public Attributes:
+
+FirstName: String. Primary identity identifier.
+
+LastName: String. Family identity descriptor.
+
+Email: String. Globally unique communication lookup token.
+
+Private Attributes:
+
+Password: String. Encrypted security authentication credential block.
+
+Private Methods:
+
+-Admin(): Internal logic verifying authorization profiles for administrative state promotions.
+
+Associations: Maps a 1-to-many (1 to *) ownership link to the Place collection and an identical 1-to-many (1 to *) transactional path toward the Review dataset.
+
+4.2.3 Place Class
+Description: Models physical property assets, fiscal rates, and geospatial reference tracking variables.
+
+Public Attributes:
+
+Title: String. Market visibility moniker.
+
+Description: String. Detailed rental arrangement statement.
+
+Price: float. Monetary baseline price variable mapped per allocation cycle.
+
+Latitude: float. Global map positioning spatial point.
+
+Longitude: float. Global map positioning spatial point.
+
+Public Methods:
+
+ListAmenities(): Evaluates and emits a list array of associated amenity structures.
+
+ListPlace(): Resolves current structural state parameters for API consumption modules.
+
+Associations: Establishes a 1-to-many (1 to *) composition path enclosing the Review table and a many-to-many (* to *) association mapping against the Amenity block.
+
+4.2.4 Review Class
+Description: An intersection entity connecting customer identities with physical property spaces via qualitative scoring.
+
+Public Attributes:
+
+Place_id: Place class instance pointer. Maps reviews strictly to target structures.
+
+User_id: User class instance pointer. Attributes review authorship to a distinct identity profile.
+
+Rating: String (with internal validation restrictions to enforce an explicit 1 to 5 score boundary).
+
+Comment: String. Structural narrative block capturing individual text evaluation.
+
+4.2.5 Amenity Class
+Description: Indexes separate individual space features (e.g., HVAC units, internet configurations).
+
+Public Attributes:
+
+Name: String. Unique terminology identifier for the asset.
+
+Description: String. Detail text block defining feature scope rules.
+
+Public Methods:
+
+ListAmenities(): Streams data configurations back to systemic listing handlers.
+
+---
+
+### [Part 4: API Interaction Sequence Flows and Individual Layouts]
+```text
+---
+
+## 5. API Interaction Sequence Flows
+
+Runtime system execution and sequence flows across the architectural boundaries are detailed across four critical platform ingress use cases.
+
+### 5.1 Use Case 1: User Registration Pathway (POST /api/v1/users)
+<img width="7355" height="4095" alt="User Registration" src="https://github.com/user-attachments/assets/d73fa849-204d-4ff2-9a70-035d3bc50878" />
+
+Request Reception: The Client targets the /api/v1/users ingress portal with an HTTP POST request carrying user data attributes.
+
+Facade Redirection: The Presentation Layer captures the payload and dispatches it via validate_user_data(data) to the Business Logic facade.
+
+Internal Parsing: The domain layer assesses attribute completeness rules via internal field validation checkpoints.
+
+Uniqueness Inquiry: The Business Logic layer queries the persistence framework using check_email_exists(email) to assert system unique parameters.
+
+Security Isolation: Once the repository confirms availability (email not found), the core framework intercepts the transparent credential string and runs hash_password(password) to ensure data isolation.
+
+Initialization: The logic runs generate_uuid() and populates systemic lifecycle creation dates.
+
+Storage Execution: The system commits the state entity via save_user(user_object) down to the Database layer.
+
+Sanitized Response: The storage core signals successful integration. The business logic replicates the data block, discards password references, and returns the public profile properties up to the presentation gateway.
+
+Egress Handshake: The API system completes the connection with an HTTP 201 Created payload.
+
+5.2 Use Case 2: Property Creation Pathway (POST /api/v1/places)
+<img width="7115" height="3555" alt="Place Creation" src="https://github.com/user-attachments/assets/87706344-c2c7-45cb-829c-e02618207bd6" />
+
+Request Reception: The Client targets the property route /api/v1/places with an HTTP POST query enclosing physical property definitions.
+
+Facade Redirection: The Presentation Layer maps the incoming JSON array block into the core domain using validate_place_data(data).
+
+Integrity Validation: The Business Logic checks relation bounds via check_user_exists(owner_id) against the persistence layer to verify the property owner is a registered user.
+
+Boundary Checks: Upon verification, the business module checks numerical field tolerances, verifying that Price >= 0 and spatial latitude/longitude adhere strictly to standard mapping coordinates bounds.
+
+Initialization: The core issues an automated machine UUIDv4 identifier and binds relevant tracking timestamps.
+
+Storage Execution: The application commits the asset state parameters using save_place(place_object).
+
+Sanitized Response: The persistence engine returns database execution success signals, and the domain model relays the structural place_object backward.
+
+Egress Handshake: The system terminates processing by returning an HTTP 201 Created status statement to the calling client.
+
+5.3 Use Case 3: Review Submission Pathway (POST /api/v1/reviews)
+<img width="7390" height="4665" alt="Review Submission" src="https://github.com/user-attachments/assets/2062af6d-67c8-4983-9a2c-4244f69a32d5" />
+
+Request Reception: The Client issues an HTTP POST transaction enclosing a review payload block targeting /api/v1/reviews.
+
+Facade Redirection: The API infrastructure transitions execution variables into the facade handler using validate_review_data(data).
+
+Relational Verifications: The core model runs three sequential relational boundary investigations against persistence stores:
+
+Asserts location presence via check_place_exists(place_id) -> place found.
+
+Asserts writer presence via check_user_exists(user_id) -> user found.
+
+Prevents transaction duplication via check_duplicate_review(user_id, place_id) -> no duplicate found.
+
+Boundary Checks: The logic executes a strict evaluation step to confirm the parameter complies with validate rating (1-5) boundaries.
+
+Storage Execution: Automated execution triggers apply machine identity identifiers and tracking timestamps before routing data into save_review(review_object).
+
+Egress Handshake: Database layers commit the transaction, and the system delivers an HTTP 201 Created response carrying the structural review representation.
+
+5.4 Use Case 4: Property Collection Discovery Pathway (GET /api/v1/places)
+<img width="6290" height="3225" alt="Fetching a List of Places" src="https://github.com/user-attachments/assets/c023f988-9c63-4469-ab59-531b8719a230" />
+
+Request Reception: The Client launches an HTTP GET request to search the property indexes using conditional filters: /api/v1/places?price_max=100&latitude=x&longitude=y.
+
+Facade Redirection: Presentation controllers capture the query and delegate filter parameters downward via get_places(filters).
+
+Boundary Checks: The business core evaluates string compliance via explicit parameters checking to block structural injection vectors.
+
+Storage Execution: The system routes a structured data discovery command query_places(filters) directly to the persistence repositories.
+
+Collection Assembly: The persistence layer indexes and extracts matching raw record data from the database.
+
+Object Serialization: The Business Logic layer maps the rows through an internal format & serialize places sequence loop to format raw schemas into clean application layer models.
+
+Egress Handshake: The serialized data block outputs to the presentation controllers, which return an HTTP 200 OK network package containing the matching collection array.
+
+---
+
+### [Part 5: Architectural Summary and Project Authorship]
+```text
+---
+
+## 6. Architectural Summary and Technical Integrity Notes
+
+To achieve full operational compliance across implementation lifecycle stages, code changes must adhere strictly to the following technical rules:
+
+* **Cryptographic Isolation**: Plaintext password elements must undergo hashing immediately within the initialization blocks of the business layer. Cleartext security tokens must never be logged or propagated down to database persistent drivers.
+* **Identity Invariance**: All storage structures must employ pure `UUIDv4` formats for entity index values. Relational auto-incremental integer values are strictly banned to safeguard data integrity and eliminate predictability tracking vectors.
+* **Decoupled Serialization Rules**: Core entity structures must never be directly piped through raw network response paths. Objects must be translated using data serialization functions inside the business logic layer to isolate database tables from public-facing client interface layouts.
+
+---
+
+## 7. Document Identification and Project Authorship
+
+* **Project Scope**: Phase 1 Architectural Design Specification Blueprint
+* **Development Entity Group**: HBnB Evolution Architecture Core Group
+
+### Document Authors and Contributors
+* **Lama Almazroa**
+* **Noura Alotibi**
+* **Shahad Alharbi**
+
+
+
