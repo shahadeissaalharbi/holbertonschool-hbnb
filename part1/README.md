@@ -83,7 +83,7 @@ The architectural design for the underlying domain classes relies on strict obje
 
 ### 4.1 Class Diagram Visual Representation
 
-<img width="1337" height="811" alt="Class Diagram" src="https://github.com/user-attachments/assets/a2e47d9c-6dcb-4130-b5ef-1eed450f1fce" />
+<img width="1363" height="808" alt="image" src="https://github.com/user-attachments/assets/e1ccfd9f-a773-4ae2-8bc3-b85520cce62a" />
 
 ### 4.2 Class Definitions and Variable Properties
 
