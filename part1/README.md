@@ -1,4 +1,4 @@
-# HBnB Evolution: Technical Documentation and Architectural Blueprint
+# HBnB: Technical Documentation and Architectural Blueprint
 
 This document serves as the comprehensive technical blueprint and architectural specification for the HBnB Evolution marketplace platform. It synthesizes the conceptual, logical, and physical design phases of the system, acting as a unified guide for implementation teams to maintain strict layer separation, solid data boundaries, and reliable operational workflows.
 
@@ -162,7 +162,7 @@ The architectural design for the underlying domain classes relies on strict obje
 
 Runtime system execution and sequence flows across the architectural boundaries are detailed across four critical platform ingress use cases.
 
-### 5.1 Use Case 1: User Registration Pathway (POST /api/v1/users)
+### 5.1 Use Case 1: User Registration (POST /api/v1/users)
 
 <img width="7355" height="4095" alt="User Registration" src="https://github.com/user-attachments/assets/d73fa849-204d-4ff2-9a70-035d3bc50878" />
 
@@ -176,7 +176,7 @@ Runtime system execution and sequence flows across the architectural boundaries 
 8. **Sanitized Response**: The storage core signals successful integration. The business logic replicates the data block, discards password references, and returns the public profile properties up to the presentation gateway.
 9. **Egress Handshake**: The API system completes the connection with an HTTP 201 Created payload.
 
-### 5.2 Use Case 2: Property Creation Pathway (POST /api/v1/places)
+### 5.2 Use Case 2: Place Creation (POST /api/v1/places)
 
 <img width="7115" height="3555" alt="Place Creation" src="https://github.com/user-attachments/assets/87706344-c2c7-45cb-829c-e02618207bd6" />
 
@@ -189,7 +189,7 @@ Runtime system execution and sequence flows across the architectural boundaries 
 7. **Sanitized Response**: The persistence engine returns database execution success signals, and the domain model relays the structural `place_object` backward.
 8. **Egress Handshake**: The system terminates processing by returning an HTTP 201 Created status statement to the calling client.
 
-### 5.3 Use Case 3: Review Submission Pathway (POST /api/v1/reviews)
+### 5.3 Use Case 3: Review Submission (POST /api/v1/reviews)
 
 <img width="7390" height="4665" alt="Review Submission" src="https://github.com/user-attachments/assets/2062af6d-67c8-4983-9a2c-4244f69a32d5" />
 
@@ -203,7 +203,7 @@ Runtime system execution and sequence flows across the architectural boundaries 
 5. **Storage Execution**: Automated execution triggers apply machine identity identifiers and tracking timestamps before routing data into `save_review(review_object)`.
 6. **Egress Handshake**: Database layers commit the transaction, and the system delivers an HTTP 201 Created response carrying the structural review representation.
 
-### 5.4 Use Case 4: Property Collection Discovery Pathway (GET /api/v1/places)
+### 5.4 Use Case 4: Fetching a List of Places (GET /api/v1/places)
 
 <img width="6290" height="3225" alt="Fetching a List of Places" src="https://github.com/user-attachments/assets/c023f988-9c63-4469-ab59-531b8719a230" />
 
@@ -229,14 +229,12 @@ To achieve full operational compliance across implementation lifecycle stages, c
 
 ## 7. Document Identification and Project Authorship
 
-- **Project Scope**: Phase 1 Architectural Design Specification Blueprint
-- **Development Entity Group**: HBnB Evolution Architecture Core Group
+- This project is built as a part of Holberton Academy 
 
 ### Document Authors and Contributors
 
-- Lama Almazroa
-- Noura Alotibi
-- Shahad Alharbi
-
+- Lama Almazroa - [@l44mz](https://github.com/l44mz)
+- Noura Alotibi - [@nnnsss12](https://github.com/nnnsss12)
+- Shahad Alharbi - [@shahadeissaalharbi](https://github.com/shahadeissaalharbi)
 
 
