@@ -1,3 +1,5 @@
+## Class Diagram
+
 This UML class diagram represents the Business Logic layer of the HBnB application, showing the core entities (`User`, `Place`, `Review`, `Amenity`) and their relationships, with shared attributes inherited from `BaseModel`.
 
 <img width="1363" height="808" alt="Class digram" src="https://github.com/user-attachments/assets/8797812a-fb48-4d17-b63b-d273c39520a2" />
