@@ -1,4 +1,4 @@
-**Package Diagram**
+## Package Diagram
 
 This diagram illustrates the system's high-level architecture, divided into three main layers: Presentation, Business Logic, and Persistence. Each layer handles its own responsibilities and stays decoupled from the others, with all communication routed through a Facade Pattern that simplifies interaction between layers.
 
