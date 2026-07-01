@@ -16,6 +16,7 @@ This UML class diagram represents the Business Logic layer of the HBnB applicati
 
 - **Inheritance**: `User`, `Place`, `Review`, `Amenity` all inherit from `BaseModel`.
 - **Composition**: between `User` and `Review`, `Place` and `Review`, `Amenity` and `Place`
+- **Association**: `User`, `Place`
 - **User → Place**: a user owns zero or multiple places (0 to many).
 - **User → Review**: a user writes zero or multiple reviews (0 to many).
 - **Place → Review**: a place receives multiple reviews (1 to many).
