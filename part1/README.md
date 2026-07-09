@@ -16,9 +16,9 @@ The physical assets and design documentation artifacts are distributed across th
 hbnb/
 └── part1/
     ├── README.md
-    ├── package diagram
-    ├── class diagram
-    └── sequence diagram
+    ├── Package Diagram.md
+    ├── class diagram.md
+    └── Sequence Diagrams.md
 ```
 
 ### Allocation of Deliverables
@@ -43,7 +43,7 @@ The application relies on a strict implementation of a Decoupled Three-Layer Arc
 
 ### 3.2 Package Diagram Visual Representation
 
-<img width="544" height="964" alt="Package Diagram" src="https://github.com/user-attachments/assets/77e46da6-c0ee-47a7-ba49-a56376c2068f" />
+<img width="2411" height="5565" alt="HBnBFacade Domain Model Flow-2026-07-09-125456" src="https://github.com/user-attachments/assets/705a65c2-849b-4581-9be9-590baf55826d" />
 
 ### 3.3 Design Pattern Integration: Structural Facade Broker
 
@@ -83,7 +83,7 @@ The architectural design for the underlying domain classes relies on strict obje
 
 ### 4.1 Class Diagram Visual Representation
 
-<img width="1363" height="808" alt="image" src="https://github.com/user-attachments/assets/e1ccfd9f-a773-4ae2-8bc3-b85520cce62a" />
+<img width="3181" height="5210" alt="image" src="https://github.com/user-attachments/assets/6db01d6f-7a2f-4527-bff7-0576316d7acd" />
 
 ### 4.2 Class Definitions and Variable Properties
 
@@ -164,7 +164,8 @@ Runtime system execution and sequence flows across the architectural boundaries 
 
 ### 5.1 Use Case 1: User Registration (POST /api/v1/users)
 
-<img width="7355" height="4095" alt="User Registration" src="https://github.com/user-attachments/assets/d73fa849-204d-4ff2-9a70-035d3bc50878" />
+<img width="6530" height="5125" alt="image" src="https://github.com/user-attachments/assets/14e0200f-5d5b-4cf6-a492-c564b11871d5" />
+
 
 1. **Request Reception**: The Client targets the `/api/v1/users` ingress portal with an HTTP POST request carrying user data attributes.
 2. **Facade Redirection**: The Presentation Layer captures the payload and dispatches it via `validate_user_data(data)` to the Business Logic facade.
@@ -178,7 +179,8 @@ Runtime system execution and sequence flows across the architectural boundaries 
 
 ### 5.2 Use Case 2: Place Creation (POST /api/v1/places)
 
-<img width="7115" height="3555" alt="Place Creation" src="https://github.com/user-attachments/assets/87706344-c2c7-45cb-829c-e02618207bd6" />
+<img width="7235" height="5125" alt="image" src="https://github.com/user-attachments/assets/36c5ec48-cb56-44d0-9295-84c0ee9ff46f" />
+
 
 1. **Request Reception**: The Client targets the property route `/api/v1/places` with an HTTP POST query enclosing physical property definitions.
 2. **Facade Redirection**: The Presentation Layer maps the incoming JSON array block into the core domain using `validate_place_data(data)`.
@@ -191,7 +193,8 @@ Runtime system execution and sequence flows across the architectural boundaries 
 
 ### 5.3 Use Case 3: Review Submission (POST /api/v1/reviews)
 
-<img width="7390" height="4665" alt="Review Submission" src="https://github.com/user-attachments/assets/2062af6d-67c8-4983-9a2c-4244f69a32d5" />
+<img width="5878" height="8192" alt="image" src="https://github.com/user-attachments/assets/8bfed0ac-6978-4f6c-ae34-5bf0fb0a4071" />
+
 
 1. **Request Reception**: The Client issues an HTTP POST transaction enclosing a review payload block targeting `/api/v1/reviews`.
 2. **Facade Redirection**: The API infrastructure transitions execution variables into the facade handler using `validate_review_data(data)`.
@@ -205,7 +208,8 @@ Runtime system execution and sequence flows across the architectural boundaries 
 
 ### 5.4 Use Case 4: Fetching a List of Places (GET /api/v1/places)
 
-<img width="6290" height="3225" alt="Fetching a List of Places" src="https://github.com/user-attachments/assets/c023f988-9c63-4469-ab59-531b8719a230" />
+<img width="5140" height="4645" alt="image" src="https://github.com/user-attachments/assets/052147f1-3a1f-403b-902c-e4ae0defec79" />
+
 
 1. **Request Reception**: The Client launches an HTTP GET request to search the property indexes using conditional filters: `/api/v1/places?price_max=100&latitude=x&longitude=y`.
 2. **Facade Redirection**: Presentation controllers capture the query and delegate filter parameters downward via `get_places(filters)`.
