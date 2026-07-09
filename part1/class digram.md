@@ -2,7 +2,63 @@
 
 This UML class diagram represents the Business Logic layer of the HBnB application, showing the core entities (`User`, `Place`, `Review`, `Amenity`) and their relationships, with shared attributes inherited from `BaseModel`.
 
-<img width="1363" height="808" alt="Class digram" src="https://github.com/user-attachments/assets/8797812a-fb48-4d17-b63b-d273c39520a2" />
+classDiagram
+    class BaseModel {
+        +UUID4 id
+        +DateTime created_at
+        +DateTime updated_at
+        +create()
+        +update()
+        +delete()
+    }
+
+    class User {
+        +String first_name
+        +String last_name
+        +String email
+        +String password
+        +Boolean is_admin
+    }
+
+    class Place {
+        +String title
+        +String description
+        +Float price
+        +Float latitude
+        +Float longitude
+        +UUID4 owner_id
+        +list_amenities()
+    }
+
+    class Review {
+        +Integer rating
+        +String comment
+        +UUID4 place_id
+        +UUID4 user_id
+    }
+
+    class Amenity {
+        +String name
+        +String description
+    }
+
+    class PlaceAmenity {
+        +UUID4 place_id
+        +UUID4 amenity_id
+    }
+
+    BaseModel <|-- User
+    BaseModel <|-- Place
+    BaseModel <|-- Review
+    BaseModel <|-- Amenity
+    BaseModel <|-- PlaceAmenity
+
+    User "1" --> "0..*" Place : owns
+    User "1" --> "0..*" Review : writes
+    Place "1" --> "0..*" Review : receives
+
+    Place "1" --> "0..*" PlaceAmenity : has
+    Amenity "1" --> "0..*" PlaceAmenity : used in
 
 
 **BaseModel** – base class providing shared `id`, timestamps, and CRUD operations.
