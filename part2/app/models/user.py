@@ -1,6 +1,11 @@
+#!/usr/bin/python3
+"""Defines the User class"""
 import re
-from app.models.base_model import BaseModel
+from models.base_model import BaseModel
+
+
 class User(BaseModel):
+    """Represents a user of the HBnB application"""
     def __init__(self, first_name, last_name, email, password, is_admin=False):
         super().__init__()
         self.first_name = first_name
