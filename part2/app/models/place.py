@@ -1,13 +1,14 @@
 #!/usr/bin/python3
 """Defines the Place class"""
 from models.base_model import BaseModel
+from models.base_model import User
 
 
 class Place(BaseModel):
     """Represents a place that can be listed and reviewed"""
 
     def __init__(self, title, description, price,
-                 latitude, longitude, owner_id):
+                 latitude, longitude, owner):
         """Initialize a new Place instance"""
         super().__init__()
         self.title = title
@@ -15,7 +16,9 @@ class Place(BaseModel):
         self.price = price
         self.latitude = latitude
         self.longitude = longitude
-        self.owner_id = owner_id
+        self.owner = owner
+        self.reviews = []  # List to store related reviews
+        self.amenities = []  # List to store related amenities
 
     @property
     def title(self):
@@ -69,3 +72,23 @@ class Place(BaseModel):
     def list_amenities(self, place_amenities):
         """Return all PlaceAmenity entries linked to this place"""
         return [pa for pa in place_amenities if pa.place_id == self.id]
+    
+    @property
+    def owner(self):
+        """Get the owner"""
+        return self._owner
+
+    @owner.setter
+    def owner(self, value):
+        """Validate and set the owner"""
+        if not isinstance(value, User):
+            raise ValueError("owner must be a valid User instance")
+        self._owner = value
+        
+    def add_review(self, review):
+        """Add a review to the place"""
+        self.reviews.append(review)
+
+    def add_amenity(self, amenity):
+        """Add an amenity to the place"""
+        self.amenities.append(amenity)
