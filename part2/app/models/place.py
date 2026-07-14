@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 """Defines the Place class"""
-from models.base_model import BaseModel
-from models.base_model import User
+from app.models.base_model import BaseModel
+from app.models.user import User
 
 
 class Place(BaseModel):

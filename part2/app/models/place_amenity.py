@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """Defines the PlaceAmenity class"""
-from models.base_model import BaseModel
+from app.models.base_model import BaseModel
 
 
 class PlaceAmenity(BaseModel):

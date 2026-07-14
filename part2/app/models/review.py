@@ -1,8 +1,9 @@
 #!/usr/bin/python3
 """Defines the Review class"""
-from models.base_model import BaseModel
-from models.user import User
-from models.place import Place
+from app.models.base_model import BaseModel
+from app.models.user import User
+from app.models.place import Place
+
 
 class Review(BaseModel):
     """Represents a review left by a user for a place"""
@@ -38,13 +39,11 @@ class Review(BaseModel):
         if not value:
             raise ValueError("text is required")
         self._text = value
-        
-    
+
     @property
     def place(self):
         """Get the place being reviewed"""
         return self._place
-
 
     @place.setter
     def place(self, value):
