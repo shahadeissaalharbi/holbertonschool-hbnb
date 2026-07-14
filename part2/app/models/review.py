@@ -1,7 +1,8 @@
 #!/usr/bin/python3
 """Defines the Review class"""
 from models.base_model import BaseModel
-
+from models.user import User
+from models.place import Place
 
 class Review(BaseModel):
     """Represents a review left by a user for a place"""
