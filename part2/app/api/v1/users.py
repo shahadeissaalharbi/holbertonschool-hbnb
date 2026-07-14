@@ -26,8 +26,8 @@ class UserList(Resource):
 
         try:
             new_user = facade.create_user(user_data)
-        except ValueError as e:
-            return {'error': str(e)}, 400
+        except ValueError:
+            return {'error': 'Invalid input data'}, 400
 
         return {
             'id': new_user.id,
@@ -84,7 +84,10 @@ class UserResource(Resource):
             if existing_user and existing_user.id != user_id:
                 return {'error': 'Email already registered'}, 400
 
-        updated_user = facade.update_user(user_id, user_data)
+        try:
+            updated_user = facade.update_user(user_id, user_data)
+        except ValueError:
+            return {'error': 'Invalid input data'}, 400
 
         return {
             'id': updated_user.id, 
