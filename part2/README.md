@@ -446,7 +446,3 @@ python3 -m unittest discover tests
 - Lama Almazroa - [@l44mz](https://github.com/l44mz)
 - Noura Alotibi - [@nnnsss12](https://github.com/nnnsss12)
 - Shahad Alharbi - [@shahadeissaalharbi](https://github.com/shahadeissaalharbi)
-
-
-
-part 2
