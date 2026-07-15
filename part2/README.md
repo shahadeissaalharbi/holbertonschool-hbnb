@@ -119,7 +119,7 @@ place = Place(title="Cozy Apartment", description="Near the beach",
 place.add_review(review)      # associates a Review object
 place.add_amenity(amenity)    # associates an Amenity object
 
-print(place.owner.first_name)   # "Lama"
+print(place.owner.first_name)   # "John"
 print(len(place.reviews))       # 1
 ```
 
@@ -211,7 +211,8 @@ part2/
 │       ├── __init__.py
 │       ├── repository.py
 ├── tests/
-│   ├── test_amenities.py
+│ ├── __init__.py
+│ ├── test_amenities.py
 │ ├── test_places.py
 │ ├── test_reviews.py
 │ ├── test_users.py
@@ -299,15 +300,19 @@ rejected before it ever reaches the persistence layer.
 - `first_name` — required, cannot be empty
 - `last_name` — required, cannot be empty
 - `email` — required, must match a valid email format
+  
 **Place**
 - `title` — required, cannot be empty
 - `price` — required, must be a positive number
 - `latitude` — must be between -90 and 90
 - `longitude` — must be between -180 and 180
+  
 **Review**
 - `text` — required, cannot be empty
+- `review` — required, must be between 1 to 5
 - `user_id` — must reference an existing `User`
 - `place_id` — must reference an existing `Place`
+  
 **Amenity**
 - `name` — required, cannot be empty
 
