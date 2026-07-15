@@ -18,7 +18,7 @@ class Place(BaseModel):
         self.longitude = longitude
         self.owner = owner
         self.reviews = []  # List to store related reviews
-        self.amenities = amenities if amenities is not None else []  # List to store related amenities
+        self.amenities = amenities if amenities is not None else []  
 
     @property
     def title(self):
