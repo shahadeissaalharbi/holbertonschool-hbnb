@@ -8,7 +8,7 @@ class Place(BaseModel):
     """Represents a place that can be listed and reviewed"""
 
     def __init__(self, title, description, price,
-                 latitude, longitude, owner):
+                 latitude, longitude, owner ,amenities=None):
         """Initialize a new Place instance"""
         super().__init__()
         self.title = title
@@ -18,7 +18,7 @@ class Place(BaseModel):
         self.longitude = longitude
         self.owner = owner
         self.reviews = []  # List to store related reviews
-        self.amenities = []  # List to store related amenities
+        self.amenities = amenities if amenities is not None else []  # List to store related amenities
 
     @property
     def title(self):

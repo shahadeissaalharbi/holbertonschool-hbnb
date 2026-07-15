@@ -57,12 +57,21 @@ class HBnBFacade:
         owner = self.get_user(place_data.get('owner_id'))
         if not owner:
             raise ValueError("Owner not found")
-        
+
         place_args = place_data.copy()
         place_args['owner'] = owner
         place_args.pop('owner_id', None)
-        
+
+        amenity_ids = place_args.pop('amenities', [])
+
         place = Place(**place_args)
+
+        for amenity_id in amenity_ids:
+            amenity = self.get_amenity(amenity_id)
+            if not amenity:
+                raise ValueError(f"Amenity not found: {amenity_id}")
+            place.add_amenity(amenity)
+
         self.place_repo.add(place)
         return place
 
@@ -76,7 +85,20 @@ class HBnBFacade:
         place = self.get_place(place_id)
         if not place:
             return None
+
+        place_data = place_data.copy()
+        amenity_ids = place_data.pop('amenities', None)
+
         place.update(place_data)
+
+        if amenity_ids is not None:
+            place.amenities = []
+            for amenity_id in amenity_ids:
+                amenity = self.get_amenity(amenity_id)
+                if not amenity:
+                    raise ValueError(f"Amenity not found: {amenity_id}")
+                place.add_amenity(amenity)
+
         return place
 
     # --- REVIEW METHODS ---
