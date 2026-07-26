@@ -2,7 +2,7 @@
 """Defines the User class"""
 import re
 from app.models.base_model import BaseModel
-
+from app import bcrypt
 
 class User(BaseModel):
     """Represents a user of the HBnB application"""
@@ -83,3 +83,11 @@ class User(BaseModel):
         if not isinstance(value, bool):
             raise ValueError("is_admin must be a boolean")
         self._is_admin = value
+        
+    def hash_password(self, password):
+        """Hashes the password before storing it."""
+        self.password = bcrypt.generate_password_hash(password).decode('utf-8')    
+        
+    def verify_password(self, password):
+        """Verifies if the provided password matches the hashed password."""
+        return bcrypt.check_password_hash(self.password, password)    

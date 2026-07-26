@@ -19,14 +19,15 @@ class TestUserEndpoints(unittest.TestCase):
 
     def test_create_user(self):
         response = self.client.post('/api/v1/users/', json={
-            "first_name": "Jane",
-            "last_name": "Doe",
-            "email": "jane.doe@example.com"
-        })
+        "first_name": "Jane",
+        "last_name": "Doe",
+        "email": "jane.doe@example.com",
+        "password": "secret123"
+    })
         self.assertEqual(response.status_code, 201)
         data = response.get_json()
         self.assertIn("id", data)
-        self.assertEqual(data["email"], "jane.doe@example.com")
+        self.assertIn("message", data)
 
     def test_create_user_missing_first_name(self):
         response = self.client.post('/api/v1/users/', json={

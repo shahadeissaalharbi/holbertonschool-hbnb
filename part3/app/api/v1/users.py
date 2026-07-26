@@ -7,7 +7,7 @@ user_model = api.model('User', {
     'first_name': fields.String(required=True, description='First name of the user'),
     'last_name': fields.String(required=True, description='Last name of the user'),
     'email': fields.String(required=True, description='Email of the user'),
-    'password': fields.String(required=False, description='Password of the user')
+    'password': fields.String(required=True, description='Password of the user')
 })
 
 user_update_model = api.model('UserUpdate', {
@@ -26,7 +26,6 @@ class UserList(Resource):
     @api.response(400, 'Invalid input data')
     def post(self):
         """Register a new user"""
-
         user_data = api.payload
         existing_user = facade.get_user_by_email(user_data['email'])
 
@@ -40,9 +39,7 @@ class UserList(Resource):
 
         return {
             'id': new_user.id,
-            'first_name': new_user.first_name,
-            'last_name': new_user.last_name,
-            'email': new_user.email
+            'message': 'User successfully created'
         }, 201
 
     @api.response(200, 'List of users retrieved successfully')
@@ -87,6 +84,7 @@ class UserResource(Resource):
     @api.response(404, 'User not found')
     @api.response(400, 'Invalid input data')
     @api.response(400, 'Email already registered')
+   
     def put(self, user_id):
         """Update user details"""
 
