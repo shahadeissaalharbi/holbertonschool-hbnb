@@ -4,6 +4,7 @@ from app.models.place import Place
 from app.models.review import Review
 from app.persistence.repository import InMemoryRepository
 
+
 class HBnBFacade:
     def __init__(self):
         self.user_repo = InMemoryRepository()
@@ -11,12 +12,16 @@ class HBnBFacade:
         self.review_repo = InMemoryRepository()
         self.amenity_repo = InMemoryRepository()
 
+    def reset(self):
+        """Clear all repositories - used to isolate tests between files"""
+        self.user_repo = InMemoryRepository()
+        self.place_repo = InMemoryRepository()
+        self.review_repo = InMemoryRepository()
+        self.amenity_repo = InMemoryRepository()
+
     # --- USER METHODS ---
     def create_user(self, user_data):
-        password = user_data.pop('password', None)
         user = User(**user_data)
-        if password:
-            user.hash_password(password)
         self.user_repo.add(user)
         return user
 
@@ -108,18 +113,18 @@ class HBnBFacade:
     def create_review(self, review_data):
         user = self.get_user(review_data.get('user_id'))
         place = self.get_place(review_data.get('place_id'))
-        
+
         if not user:
             raise ValueError("User not found")
         if not place:
             raise ValueError("Place not found")
-            
+
         review_args = review_data.copy()
         review_args['user'] = user
         review_args['place'] = place
         review_args.pop('user_id', None)
         review_args.pop('place_id', None)
-        
+
         review = Review(**review_args)
         self.review_repo.add(review)
         place.add_review(review)
@@ -143,10 +148,10 @@ class HBnBFacade:
             return None
         review.update(review_data)
         return review
-    
+
     def delete_review(self, review_id):
         review = self.review_repo.get(review_id)
         if not review:
-             return False
+            return False
         self.review_repo.delete(review_id)
         return True
