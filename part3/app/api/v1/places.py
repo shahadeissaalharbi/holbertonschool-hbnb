@@ -9,7 +9,8 @@ place_model = api.model('Place', {
     'price': fields.Float(required=True, description='Price per night'),
     'latitude': fields.Float(required=True, description='Latitude coordinate'),
     'longitude': fields.Float(required=True, description='Longitude coordinate'),
-    'owner_id': fields.String(required=True, description='ID of the owner')
+    'owner_id': fields.String(required=True, description='ID of the owner'),
+    'amenities': fields.List(fields.String ,description='List of amenity IDs')
 })
 
 place_update_model = api.model('PlaceUpdate', {
@@ -18,7 +19,8 @@ place_update_model = api.model('PlaceUpdate', {
     'price': fields.Float(description='Price per night'),
     'latitude': fields.Float(description='Latitude coordinate'),
     'longitude': fields.Float(description='Longitude coordinate'),
-    'owner_id': fields.String(description='ID of the owner')
+    'owner_id': fields.String(description='ID of the owner'),
+    'amenities': fields.List(fields.String, description='List of amenity IDs')
 })
 
 
@@ -42,7 +44,8 @@ class PlaceList(Resource):
             'price': new_place.price,
             'latitude': new_place.latitude,
             'longitude': new_place.longitude,
-            'owner_id': new_place.owner.id
+            'owner_id': new_place.owner.id,
+            'amenities': [a.id for a in new_place.amenities]
         }, 201
 
     @api.response(200, 'List of places retrieved successfully')
@@ -106,3 +109,19 @@ class PlaceResource(Resource):
             'latitude': updated_place.latitude,
             'longitude': updated_place.longitude
         }, 200
+        
+@api.route('/<place_id>/reviews')
+class PlaceReviewList(Resource):
+    @api.response(200, 'List of reviews for the place retrieved successfully')
+    @api.response(404, 'Place not found')
+    def get(self, place_id):
+        """Get all reviews for a specific place"""
+        reviews = facade.get_reviews_by_place(place_id)
+        if reviews is None:
+            return {'error': 'Place not found'}, 404
+
+        return [{
+            'id': r.id,
+            'text': r.text,
+            'rating': r.rating
+        } for r in reviews], 200
