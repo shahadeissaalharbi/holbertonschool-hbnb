@@ -12,6 +12,7 @@ def create_app(config_class="config.DevelopmentConfig"):
               description='HBnB Application API', doc='/api/v1/')
     
     bcrypt.init_app(app)
+    jwt.init_app(app) 
     
     from app.api.v1.users import api as users_ns
     api.add_namespace(users_ns, path='/api/v1/users')
