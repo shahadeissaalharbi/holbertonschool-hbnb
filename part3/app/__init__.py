@@ -24,5 +24,8 @@ def create_app(config_class="config.DevelopmentConfig"):
 
     from app.api.v1.reviews import api as reviews_ns
     api.add_namespace(reviews_ns, path='/api/v1/reviews')
+    
+    from app.api.v1.auth import api as auth_ns
+    api.add_namespace(auth_ns, path='/api/v1/auth')
 
     return app
