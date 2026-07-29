@@ -51,6 +51,14 @@ class HBnBFacade:
         self.amenity_repository.add(amenity)
         return amenity
 
+    def delete_amenity(self, amenity_id):
+        amenity = self.amenity_repository.get(amenity_id)
+        if not amenity:
+            return False
+        self.amenity_repository.delete(amenity_id)
+        return True
+    
+
     def get_amenity(self, amenity_id):
         return self.amenity_repository.get(amenity_id)
 
@@ -90,6 +98,13 @@ class HBnBFacade:
     def get_place(self, place_id):
         return self.place_repository.get(place_id)
 
+    def delete_place(self, place_id):
+        place = self.place_repository.get(place_id)
+        if not place:
+            return False
+        self.place_repository.delete(place_id)
+        return True
+    
     def get_all_places(self):
         return self.place_repository.get_all()
 
@@ -133,6 +148,7 @@ class HBnBFacade:
         self.review_repository.add(review)
         place.add_review(review)
         return review
+
 
     def get_review(self, review_id):
         return self.review_repository.get(review_id)
