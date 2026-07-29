@@ -31,6 +31,10 @@ class Place(BaseModel):
         self.reviews = []  # List to store related reviews
         self.amenities = amenities if amenities is not None else []
 
+        def add_review(self, review):
+          """Add a review to the place"""
+        self.reviews.append(self.reviews)
+
     @validates('title')
     def validate_title(self, key, value):
         """Validate and set the title"""
