@@ -1,6 +1,9 @@
-from app.persistence import Repository 
+from app.persistence.repository import Repository
 from app import db  # Assuming you have set up SQLAlchemy in your Flask app
-from app.models import User, Place, Review, Amenity  # Import your models
+from app.models.user import User
+from app.models.place import Place
+from app.models.review import Review
+from app.models.amenity import Amenity
 
 class SQLAlchemyRepository(Repository):
     def __init__(self, model):
