@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 """Defines the Review class"""
+from app import db
+from sqlalchemy.orm import validates
 from app.models.base_model import BaseModel
 from app.models.user import User
 from app.models.place import Place
@@ -7,6 +9,10 @@ from app.models.place import Place
 
 class Review(BaseModel):
     """Represents a review left by a user for a place"""
+    __tablename__ = 'reviews'
+
+    text = db.Column(db.String(500), nullable=False)
+    rating = db.Column(db.Integer, nullable=False)
 
     def __init__(self, rating, text, place, user):
         """Initialize a new Review instance"""
@@ -16,29 +22,19 @@ class Review(BaseModel):
         self.place = place
         self.user = user
 
-    @property
-    def rating(self):
-        """Get the rating"""
-        return self._rating
-
-    @rating.setter
-    def rating(self, value):
+    @validates('rating')
+    def validate_rating(self, key, value):
         """Validate and set the rating"""
         if not isinstance(value, int) or not (1 <= value <= 5):
             raise ValueError("rating must be an integer between 1 and 5")
-        self._rating = value
+        return value
 
-    @property
-    def text(self):
-        """Get the text"""
-        return self._text
-
-    @text.setter
-    def text(self, value):
+    @validates('text')
+    def validate_text(self, key, value):
         """Validate and set the text"""
         if not value:
             raise ValueError("text is required")
-        self._text = value
+        return value
 
     @property
     def place(self):

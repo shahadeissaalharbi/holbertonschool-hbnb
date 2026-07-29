@@ -1,4 +1,7 @@
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_restx import Resource
+
+from part3.app import api
 @api.route('/protected')
 class ProtectedResource(Resource):
     @jwt_required()
