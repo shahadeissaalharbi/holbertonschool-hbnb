@@ -58,7 +58,11 @@ Each task is carefully designed to build on previous work and ensure the system 
 
 By the end of Part 3, the backend not only stores data in a persistent and secure database but also ensures that only authorized users can access and modify specific data. Industry-standard authentication and database management practices, crucial for real-world web applications, are implemented throughout.
 
+### Document Authors and Contributors
 
+- Lama Almazroa - [@l44mz](https://github.com/l44mz)
+- Noura Alotibi - [@nnnsss12](https://github.com/nnnsss12)
+- Shahad Alharbi - [@shahadeissaalharbi](https://github.com/shahadeissaalharbi)
 
 ---
 
