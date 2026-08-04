@@ -1,6 +1,7 @@
 from app.models.user import User
 from app import db
-from app.persistence.repository import SQLAlchemyRepository
+from app.persistence.repository import Repository
+from app.persistence.SQLAlchemyRepository import SQLAlchemyRepository
 
 
 class UserRepository(SQLAlchemyRepository):
