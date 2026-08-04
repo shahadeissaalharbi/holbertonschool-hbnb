@@ -54,7 +54,7 @@ In this part of the project, the tasks are organized in a way that builds progre
 
 Each task is carefully designed to build on previous work and ensure the system transitions smoothly from development to production readiness.
 
-Database ER Diagram
+📊 Database ER Diagram
 
 This diagram (generated with mermaid.js) shows the database schema for the HBnB app, covering User, Place, Review, and Amenity.
 
