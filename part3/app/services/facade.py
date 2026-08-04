@@ -1,3 +1,4 @@
+from app import db
 from app.models.user import User
 from app.models.amenity import Amenity
 from app.models.place import Place
@@ -8,7 +9,7 @@ from app.persistence import repository
 
 class HBnBFacade:
     def __init__(self):
-        self.user_repository = UserRepository()  # Switched to UserRepository
+        self.user_repository = UserRepository()
         self.place_repository = SQLAlchemyRepository(Place)
         self.review_repository = SQLAlchemyRepository(Review)
         self.amenity_repository = SQLAlchemyRepository(Amenity)
@@ -74,23 +75,30 @@ class HBnBFacade:
 
     # --- PLACE METHODS ---
     def create_place(self, place_data):
-        owner = self.get_user(place_data.get('owner_id'))
-        if not owner:
+        owner_id = place_data.get('owner_id')
+        if not owner_id or not self.get_user(owner_id):
             raise ValueError("Owner not found")
 
-        place_args = place_data.copy()
-        place_args['owner'] = owner
-        place_args.pop('owner_id', None)
-
-        amenity_ids = place_args.pop('amenities', [])
-
-        place = Place(**place_args)
-
+        amenity_ids = place_data.get('amenities', [])
+        amenities = []
         for amenity_id in amenity_ids:
             amenity = self.get_amenity(amenity_id)
             if not amenity:
                 raise ValueError(f"Amenity not found: {amenity_id}")
-            place.add_amenity(amenity)
+            amenities.append(amenity)
+
+        place_args = {
+            'title': place_data.get('title'),
+            'description': place_data.get('description'),
+            'price': place_data.get('price'),
+            'latitude': place_data.get('latitude'),
+            'longitude': place_data.get('longitude'),
+            'user_id': owner_id,
+        }
+
+        place = Place(**place_args)
+        if amenities:
+            place.amenities = amenities
 
         self.place_repository.add(place)
         return place
@@ -115,38 +123,42 @@ class HBnBFacade:
 
         place_data = place_data.copy()
         amenity_ids = place_data.pop('amenities', None)
-
-        place.update(place_data)
+        place_data.pop('owner_id', None)
 
         if amenity_ids is not None:
-            place.amenities = []
+            amenities = []
             for amenity_id in amenity_ids:
                 amenity = self.get_amenity(amenity_id)
                 if not amenity:
                     raise ValueError(f"Amenity not found: {amenity_id}")
-                place.add_amenity(amenity)
+                amenities.append(amenity)
+            place.amenities = amenities
 
+        place.update(place_data)
         return place
 
     # --- REVIEW METHODS ---
     def create_review(self, review_data):
-        user = self.get_user(review_data.get('user_id'))
-        place = self.get_place(review_data.get('place_id'))
+        user_id = review_data.get('user_id')
+        place_id = review_data.get('place_id')
+
+        user = self.get_user(user_id)
+        place = self.get_place(place_id)
 
         if not user:
             raise ValueError("User not found")
         if not place:
             raise ValueError("Place not found")
 
-        review_args = review_data.copy()
-        review_args['user'] = user
-        review_args['place'] = place
-        review_args.pop('user_id', None)
-        review_args.pop('place_id', None)
+        review_args = {
+            'text': review_data.get('text'),
+            'rating': review_data.get('rating'),
+            'user_id': user_id,
+            'place_id': place_id,
+        }
 
         review = Review(**review_args)
         self.review_repository.add(review)
-        place.add_review(review)
         return review
 
 
