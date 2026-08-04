@@ -3,8 +3,6 @@
 from app import db
 from sqlalchemy.orm import validates
 from app.models.base_model import BaseModel
-from app.models.user import User
-from app.models.place import Place
 
 
 class Review(BaseModel):
@@ -14,13 +12,19 @@ class Review(BaseModel):
     text = db.Column(db.String(500), nullable=False)
     rating = db.Column(db.Integer, nullable=False)
 
-    def __init__(self, rating, text, place, user):
+    # Foreign keys
+    user_id = db.Column(db.String(36), db.ForeignKey('users.id'),
+                         nullable=False)
+    place_id = db.Column(db.String(36), db.ForeignKey('places.id'),
+                          nullable=False)
+
+    def __init__(self, text, rating, user_id, place_id):
         """Initialize a new Review instance"""
         super().__init__()
-        self.rating = rating
         self.text = text
-        self.place = place
-        self.user = user
+        self.rating = rating
+        self.user_id = user_id
+        self.place_id = place_id
 
     @validates('rating')
     def validate_rating(self, key, value):
@@ -35,27 +39,3 @@ class Review(BaseModel):
         if not value:
             raise ValueError("text is required")
         return value
-
-    @property
-    def place(self):
-        """Get the place being reviewed"""
-        return self._place
-
-    @place.setter
-    def place(self, value):
-        """Validate and set the place"""
-        if not isinstance(value, Place):
-            raise ValueError("place must be a valid Place instance")
-        self._place = value
-
-    @property
-    def user(self):
-        """Get the user who wrote the review"""
-        return self._user
-
-    @user.setter
-    def user(self, value):
-        """Validate and set the user"""
-        if not isinstance(value, User):
-            raise ValueError("user must be a valid User instance")
-        self._user = value

@@ -3,7 +3,7 @@
 import re
 from app.models.base_model import BaseModel
 from app import db, bcrypt
-from sqlalchemy.orm import validates
+from sqlalchemy.orm import validates, relationship
 
 
 class User(BaseModel):
@@ -15,6 +15,12 @@ class User(BaseModel):
     email = db.Column(db.String(120), nullable=False, unique=True)
     password = db.Column(db.String(128), nullable=True)
     is_admin = db.Column(db.Boolean, default=False, nullable=False)
+
+    # Relationships
+    places = relationship('Place', backref='owner', lazy=True,
+                           cascade='all, delete-orphan')
+    reviews = relationship('Review', backref='author', lazy=True,
+                            cascade='all, delete-orphan')
 
     def __init__(self, first_name, last_name, email, password=None, is_admin=False):
         super().__init__()

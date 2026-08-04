@@ -11,11 +11,10 @@ class Amenity(BaseModel):
 
     name = db.Column(db.String(50), nullable=False)
 
-    def __init__(self, name, description=""):
+    def __init__(self, name):
         """Initialize a new Amenity instance"""
         super().__init__()
         self.name = name
-        self.description = description
 
     @validates('name')
     def validate_name(self, key, value):
