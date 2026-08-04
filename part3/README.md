@@ -54,6 +54,31 @@ In this part of the project, the tasks are organized in a way that builds progre
 
 Each task is carefully designed to build on previous work and ensure the system transitions smoothly from development to production readiness.
 
+Database ER Diagram
+
+This diagram (generated with mermaid.js) shows the database schema for the HBnB app, covering User, Place, Review, and Amenity.
+
+Entities
+User — id (PK), first_name, last_name, email, password (bcrypt-hashed, never exposed via API), is_admin.
+Place — id (PK), title, description, price, latitude, longitude, owner_id (FK → User).
+Review — id (PK), text, rating, user_id (FK → User), place_id (FK → Place).
+Amenity — id (PK), name.
+Place_Amenity — junction table with place_id (FK) and amenity_id (FK), resolving the many-to-many relationship.
+Relationships
+Relationship	Type
+User owns Place	One-to-Many
+User writes Review	One-to-Many
+Place receives Review	One-to-Many
+Place ↔ Amenity	Many-to-Many (via Place_Amenity)
+Notes
+Crow's foot notation: || = one/mandatory, o = optional, branching lines = many.
+All PKs are string (UUID) instead of integers, for globally unique IDs.
+Foreign keys enforce referential integrity between related tables.
+
+
+
+
+
 ---
 
 1. Test the Authentication Flow
