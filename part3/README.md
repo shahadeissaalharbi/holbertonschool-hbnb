@@ -38,6 +38,7 @@ Additionally, **JWT-based authentication** secures the API, ensuring that only a
 
 ## Structure of the Project
 
+```
 
 part3/
 ├── app/
