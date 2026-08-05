@@ -37,47 +37,66 @@ Additionally, **JWT-based authentication** secures the API, ensuring that only a
 - **Testing REST APIs with cURL**: [Everything cURL](https://everything.curl.dev/)
 
 ## Structure of the Project
-
-In this part of the project, the tasks are organized in a way that builds progressively towards a complete, secure, and database-backed backend system:
-
-0. **Modify the Application Factory to Include the Configuration**: Update `create_app()` to receive a configuration object (following the Application Factory pattern), defaulting to `config.DevelopmentConfig`.
-1. **Modify the User Model to Include Password**: Store passwords securely using bcrypt and update the user registration logic. The password is never returned in `GET` requests.
-2. **Implement JWT Authentication**: Secure the API using JWT tokens, ensuring only authenticated users can access protected endpoints. Tokens embed the user's `id` and `is_admin` claim.
-3. **Implement Authorization for Specific Endpoints**: Enforce ownership rules on places and reviews — users can only modify what they own, cannot review their own place, and cannot review the same place twice. Public `GET` endpoints remain open.
-4. **Implement Administrator Access Endpoints**: Restrict user creation/modification and amenity management to admins (`is_admin`), who also bypass ownership restrictions on places and reviews.
-5. **Implement SQLAlchemy Repository**: Introduce `SQLAlchemyRepository`, implementing the existing repository interface, and refactor the Facade to use it (model mapping and DB initialization follow in the next task).
-6. **Map the User Entity to SQLAlchemy Model**: Map `BaseModel` and `User` to SQLAlchemy models, implement `UserRepository` (with `get_user_by_email`), and refactor the Facade accordingly.
-7. **Map the Place, Review, and Amenity Entities**: Map the core attributes of `Place`, `Review`, and `Amenity` to SQLAlchemy models, without relationships yet.
-8. **Map Relationships Between Entities Using SQLAlchemy**: Define one-to-many relationships (`User`↔`Place`, `User`↔`Review`, `Place`↔`Review`) and the many-to-many relationship (`Place`↔`Amenity`) using `ForeignKey`, `relationship()`, and `backref`.
-9. **SQL Scripts for Table Generation and Initial Data**: Write raw SQL scripts to generate the full schema (`User`, `Place`, `Review`, `Amenity`, `Place_Amenity`) and insert initial data — an administrator user and a set of starter amenities.
-10. **Generate Database Diagrams**: Use **mermaid.js** to create ER diagrams representing the `User`, `Place`, `Review`, `Amenity`, and `Place_Amenity` tables and their relationships.
+part3/
+├── app/
+│   ├── __init__.py
+│   ├── api/
+│   │   ├── __init__.py
+│   │   └── v1/
+│   │       ├── __init__.py
+│   │       ├── amenities.py
+│   │       ├── places.py
+│   │       ├── reviews.py
+│   │       └── users.py
+│   ├── models/
+│   │   ├── __init__.py
+│   │   ├── amenity.py
+│   │   ├── base_model.py
+│   │   ├── place_amenity.py
+│   │   ├── place.py
+│   │   ├── review.py
+│   │   └── user.py
+│   ├── persistence/
+│   │   ├── __init__.py
+│   │   └── repository.py
+│   └── services/
+│       ├── __init__.py
+│       └── facade.py
+├── instance/
+│   └── development.db
+├── tests/
+│   ├── test_models/
+│   ├── __init__.py
+│   ├── test_amenities.py
+│   ├── test_places.py
+│   ├── test_reviews.py
+│   └── test_users.py
+├── config.py
+├── README.md
+├── requirements.txt
+├── run.py
+├── .gitignore
+└── er_diagram.png
 
 Each task is carefully designed to build on previous work and ensure the system transitions smoothly from development to production readiness.
 
 ##📊 Database ER Diagram
+Here is a concise breakdown of the ER Diagram:
 
-This diagram (generated with mermaid.js) shows the database schema for the HBnB app, covering User, Place, Review, and Amenity.
+**Entities**
 
-Entities
-User — id (PK), first_name, last_name, email, password (bcrypt-hashed, never exposed via API), is_admin.
-Place — id (PK), title, description, price, latitude, longitude, owner_id (FK → User).
-Review — id (PK), text, rating, user_id (FK → User), place_id (FK → Place).
-Amenity — id (PK), name.
-Place_Amenity — junction table with place_id (FK) and amenity_id (FK), resolving the many-to-many relationship.
-Relationships
-Relationship	Type
-User owns Place	One-to-Many
-User writes Review	One-to-Many
-Place receives Review	One-to-Many
-Place ↔ Amenity	Many-to-Many (via Place_Amenity)
-Notes
-Crow's foot notation: || = one/mandatory, o = optional, branching lines = many.
-All PKs are string (UUID) instead of integers, for globally unique IDs.
-Foreign keys enforce referential integrity between related tables.
+* **USER:** Stores user data (`id`, name, email, password, `is_admin`).
+* **PLACE:** Stores listing info (`id`, title, price, location) and links to owner via `owner_id`.
+* **REVIEW:** Holds feedback (`id`, text, rating) linked to both `user_id` and `place_id`.
+* **AMENITY:** List of available features (`id`, name).
+* **PLACE_AMENITY:** Junction table linking places and amenities.
 
+**Relationships**
 
-
-
+* **USER $\rightarrow$ PLACE:** One user can own multiple places ($1 : N$).
+* **USER $\rightarrow$ REVIEW:** One user can write multiple reviews ($1 : N$).
+* **PLACE $\rightarrow$ REVIEW:** One place can receive multiple reviews ($1 : N$).
+* **PLACE $\leftrightarrow$ AMENITY:** Many-to-many relationship ($N : M$) joined via **PLACE_AMENITY**.
 
 ---
 
