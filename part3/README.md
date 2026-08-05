@@ -37,6 +37,8 @@ Additionally, **JWT-based authentication** secures the API, ensuring that only a
 - **Testing REST APIs with cURL**: [Everything cURL](https://everything.curl.dev/)
 
 ## Structure of the Project
+
+
 part3/
 ├── app/
 │   ├── __init__.py
@@ -77,6 +79,9 @@ part3/
 ├── run.py
 ├── .gitignore
 └── er_diagram.png
+
+
+
 
 Each task is carefully designed to build on previous work and ensure the system transitions smoothly from development to production readiness.
 
