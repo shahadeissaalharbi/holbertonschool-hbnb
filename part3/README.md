@@ -50,7 +50,10 @@ part3/
 │   │       ├── amenities.py
 │   │       ├── places.py
 │   │       ├── reviews.py
+│   │       ├── auth.py
+│   │       ├── protected.py
 │   │       └── users.py
+│   │         
 │   ├── models/
 │   │   ├── __init__.py
 │   │   ├── amenity.py
@@ -61,7 +64,12 @@ part3/
 │   │   └── user.py
 │   ├── persistence/
 │   │   ├── __init__.py
-│   │   └── repository.py
+│   │   ├──repository.py
+│   │   ├── user_repository.py
+│   │   ├── SQLAlchemyRepository.py
+│   │   ├── SQLScripts.sql
+│   │   └── data.sql
+│   │
 │   └── services/
 │       ├── __init__.py
 │       └── facade.py
@@ -69,17 +77,19 @@ part3/
 │   └── development.db
 ├── tests/
 │   ├── test_models/
-│   ├── __init__.py
+│       ├── test_user.py
+│       └── __init__.py
 │   ├── test_amenities.py
 │   ├── test_places.py
 │   ├── test_reviews.py
-│   └── test_users.py
+│   ├── test_users.py
+│   └─── __init__.py
 ├── config.py
 ├── README.md
 ├── requirements.txt
 ├── run.py
 ├── .gitignore
-└── er_diagram.png
+└── ERDiagram.md
 ```
 
 
@@ -90,8 +100,12 @@ part3/
 
 Each task is carefully designed to build on previous work and ensure the system transitions smoothly from development to production readiness.
 
-##📊 Database ER Diagram
+##  Database ER Diagram
 Here is a concise breakdown of the ER Diagram:
+
+<img width="1086" height="1600" alt="WhatsApp Image 2026-08-05 at 4 53 06 PM" src="https://github.com/user-attachments/assets/63a68758-193d-4f97-9911-ab39065eeaee" />
+
+
 
 **Entities**
 
@@ -299,4 +313,3 @@ By the end of Part 3, the backend not only stores data in a persistent and secur
 
 ---
 
-## Project Structure
