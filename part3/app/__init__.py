@@ -2,9 +2,11 @@ from flask import Flask
 from flask_restx import Api
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
+from flask_sqlalchemy import SQLAlchemy
 
 jwt = JWTManager()
 bcrypt = Bcrypt()
+db = SQLAlchemy()
 
 def create_app(config_class="config.DevelopmentConfig"):
     app = Flask(__name__)
@@ -14,6 +16,7 @@ def create_app(config_class="config.DevelopmentConfig"):
 
     bcrypt.init_app(app)
     jwt.init_app(app)
+    db.init_app(app)
 
     from app.api.v1.users import api as users_ns
     api.add_namespace(users_ns, path='/api/v1/users')
@@ -30,8 +33,16 @@ def create_app(config_class="config.DevelopmentConfig"):
     from app.api.v1.auth import api as auth_ns
     api.add_namespace(auth_ns, path='/api/v1/auth')
 
-    _seed_admin()
-
+    with app.app_context():
+        
+        from app.models.user import User
+        from app.models.place import Place
+        from app.models.review import Review
+        from app.models.amenity import Amenity
+    
+        db.create_all()
+       
+        _seed_admin()
     return app
 
 
