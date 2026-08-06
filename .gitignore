@@ -1,8 +1,8 @@
-__pycache__/
-*.pyc
-*.pyo
-venv/
-env/
-*.db
-.env
-instance/
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+**/venv/
+**/env/
+**/*.db
+**/.env
+**/instance/
