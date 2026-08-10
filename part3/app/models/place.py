@@ -3,17 +3,8 @@
 from app import db
 from sqlalchemy.orm import validates, relationship
 from app.models.base_model import BaseModel
+from app.models.place_amenity import PlaceAmenity
 
-
-# Association table for the Many-to-Many relationship
-# between Place and Amenity
-place_amenity = db.Table(
-    'place_amenity',
-    db.Column('place_id', db.String(36), db.ForeignKey('places.id'),
-               primary_key=True),
-    db.Column('amenity_id', db.String(36), db.ForeignKey('amenities.id'),
-               primary_key=True)
-)
 
 
 class Place(BaseModel):
@@ -33,10 +24,9 @@ class Place(BaseModel):
     # Relationships
     reviews = relationship('Review', backref='place', lazy=True,
                             cascade='all, delete-orphan')
-    amenities = relationship('Amenity', secondary=place_amenity,
-                              lazy='subquery',
-                              backref=db.backref('places', lazy=True))
-
+    amenities = relationship('Amenity', secondary=PlaceAmenity.__table__,
+                          lazy='subquery',
+                          backref=db.backref('places', lazy=True))
     def __init__(self, title, description, price, latitude, longitude,
                  user_id):
         """Initialize a new Place instance"""
