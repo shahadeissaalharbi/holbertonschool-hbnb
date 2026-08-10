@@ -83,27 +83,103 @@ part3/
 - `PLACE → REVIEW`: one place can receive multiple reviews (1:N)
 - `PLACE ↔ AMENITY`: many-to-many (N:M), joined via `PLACE_AMENITY`
 
-## Getting started
 
-### Environment setup
+## Database Testing — CRUD
 
-The app reads database credentials and secret keys from environment variables. Copy the example file to `.env`:
+The database layer was tested using MySQL to verify that the `hbnb_data` database and its tables are correctly created and that basic CRUD (Create, Read, Update, Delete) operations work as expected.
 
+### 1. Connect to MySQL
 ```bash
-cp .env.example .env
+mysql -u root
 ```
 
-For grading/checker purposes, the project uses a fixed development database user and password:
-
-```
-# .env
-DATABASE_URL=mysql+pymysql://hbnb_user:nn123456@localhost/hbnb_dev_db
-SECRET_KEY=your_secret_key_here
-JWT_SECRET_KEY=your_jwt_secret_here
+### 2. Create
+```sql
+CREATE DATABASE hbnb_data;
 ```
 
-**Database credentials:**
-- **password:** `nn123456`
+### 3. Select the HBNB Database
+```sql
+USE hbnb_data;
+```
+
+The database schema was loaded using:
+```sql
+SOURCE SQLScripts.sql;
+```
+The SQL script executed successfully.
+
+### 4. Read
+The database tables were checked using:
+```sql
+SHOW TABLES;
+```
+
+Data can be retrieved using `SELECT` queries:
+```sql
+SELECT * FROM User;
+SELECT * FROM Place;
+SELECT * FROM Reviews
+SELECT * FROM Amenity;
+SELECT * FROM Place_Amenity;
+```
+
+### 5. Update
+Existing records can be modified using an `UPDATE` query:
+```sql
+UPDATE User
+SET first_name = 'Updated'
+WHERE id = 'user_id';
+```
+
+The modification can then be verified with:
+```sql
+SELECT * FROM User
+WHERE id = 'user_id';
+```
+
+### 6. Insert
+New records can be inserted using a `INSERT` query:
+```sql
+INSERT INTO users (user_id, first_name, last_name, email, password)
+VALUES (
+    '123e4567-e89b-12d3-a456-426614174000',
+    'John',
+    'Doe',
+    'john.doe@example.com',
+    'password123'
+);
+```
+
+### 7. Delete
+Records can be removed using a `DELETE` query:
+```sql
+DELETE FROM User
+WHERE id = 'user_id';
+```
+
+The deletion can be verified with:
+```sql
+SELECT * FROM User
+WHERE id = 'user_id';
+```
+An empty result confirms that the record was successfully deleted.
+
+
+
+
+### CRUD Testing Summary
+
+| Operation  | MySQL Command                | Result                           |
+| ---------- | ----------------------------- | --------------------------------- |
+| **Create** | `CREATE DATABASE hbnb_data;`  | Database already exists           |
+| **Read**   | `SELECT`, `SHOW TABLES`       | Data can be retrieved             |
+| **Update** | `UPDATE ... SET ...`          | Existing records can be modified  |
+| **Insert** | `INSERT INTO ...`             | Records can be inserted            |
+| **Delete** | `DELETE FROM ...`             | Records can be removed            |
+
+These tests confirm that the MySQL database is accessible, the `hbnb_data` schema can be loaded successfully, and the database supports the required CRUD operations.
+
 
 Use these to connect to the development database when testing or checking the project.
 
@@ -200,6 +276,64 @@ Manual/integration testing was also done with cURL against a running instance �
 - The `Place ↔ Amenity` many-to-many relationship uses an association proxy pattern rather than exposing the join table directly in the API.
 - JWT setup requires `jwt.init_app(app)` to be called during app initialization — easy to miss, and the API silently fails to validate tokens without it.
 - The `GET /api/v1/places/<place_id>/reviews` route is registered under the `places` blueprint/namespace rather than `reviews`, since reviews are scoped to a place in the URL.
+
+## Running with Docker
+
+This project is containerized using Docker, which lets you run the HBnB application in an isolated environment without installing Python or dependencies directly on your machine.
+
+### Prerequisites
+
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) installed and running
+
+### Project Dockerfile
+
+```dockerfile
+FROM python:3.10-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+WORKDIR /app
+
+COPY requirements.txt /app/
+
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
+
+COPY . /app/
+
+EXPOSE 5000
+
+CMD ["python", "run.py"]
+```
+
+This does the following:
+- Uses a lightweight Python 3.10 base image
+- Installs project dependencies from `requirements.txt`
+- Copies the application code into the container
+- Exposes port `5000` (the Flask app's default port)
+- Runs `run.py` as the container's entry point
+
+### How to Build and Run
+
+**1. Make sure Docker Desktop is running.**
+
+**2. From the project root (where the `Dockerfile` is located), build the image:**
+```bash
+docker build -t my-app .
+```
+
+**3. Run the container:**
+```bash
+docker run -p 5000:5000 my-app
+```
+
+This maps port `5000` on your machine to port `5000` inside the container.
+
+**4. Access the app** in your browser or API client at:
+```
+http://localhost:5000
+```
 
 ## Resources
 
