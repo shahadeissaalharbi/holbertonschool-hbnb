@@ -38,9 +38,9 @@ class Place(BaseModel):
         self.longitude = longitude
         self.user_id = user_id
 
-        def add_review(self, review):
-          """Add a review to the place"""
-        self.reviews.append(self.reviews)
+    def add_review(self, review):
+        """Add a review to the place"""
+        self.reviews.append(review)
 
     @validates('title')
     def validate_title(self, key, value):
