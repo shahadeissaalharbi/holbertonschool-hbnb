@@ -42,23 +42,6 @@ def create_app(config_class="config.DevelopmentConfig"):
     
         db.create_all()
        
-        _seed_admin()
+        
     return app
 
-
-def _seed_admin():
-    """Bootstrap the first admin user so admin-only endpoints are reachable."""
-    from app.services import facade
-
-    admin_email = "admin@hbnb.io"
-    if facade.get_user_by_email(admin_email):
-        return  # already seeded, don't duplicate on reloader/re-import
-
-    admin_data = {
-        "first_name": "Admin",
-        "last_name": "User",
-        "email": admin_email,
-        "password": "admin1234",
-        "is_admin": True
-    }
-    facade.create_user(admin_data)
