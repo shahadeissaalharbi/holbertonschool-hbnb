@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beautiful Beach House - HBnB</title>
+    <link rel="icon" type="image/png" href="images/icon.png">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="index.html" class="logo-link">
+                <img src="images/logo.png" alt="HBnB logo" class="logo">
+            </a>
+        </nav>
+        <nav>
+            <a href="login.html" class="login-button">Login</a>
+        </nav>
+    </header>
+
+    <main>
+        <h1>Beautiful Beach House</h1>
+
+        <section class="place-details" aria-label="Place information">
+            <div class="place-info">
+                <p><span class="host-name">Host:</span> John Doe</p>
+                <p><span class="place-price-value">Price per night:</span> $150</p>
+                <p><strong>Description:</strong> A beautiful beach house with amazing views of the ocean. Perfect for a relaxing family getaway just steps from the sand.</p>
+                <div>
+                    <strong>Amenities:</strong>
+                    <ul class="amenities-list">
+                        <li><img src="images/icon_wifi.png" alt=""> WiFi</li>
+                        <li><img src="images/icon_bed.png" alt=""> 3 Bedrooms</li>
+                        <li><img src="images/icon_bath.png" alt=""> 2 Bathrooms</li>
+                        <li>Pool</li>
+                        <li>Air Conditioning</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="reviews" aria-label="Reviews">
+            <h2>Reviews</h2>
+
+            <article class="review-card">
+                <div class="review-body">
+                    <p class="review-user">Jane Smith</p>
+                    <p class="review-comment">Great place to stay! Clean, comfortable and close to everything.</p>
+                    <p class="review-rating" aria-label="Rating: 4 out of 5">&#9733;&#9733;&#9733;&#9733;&#9734;</p>
+                </div>
+            </article>
+
+            <article class="review-card">
+                <div class="review-body">
+                    <p class="review-user">Robert Brown</p>
+                    <p class="review-comment">Amazing location and very comfortable. Would book again.</p>
+                    <p class="review-rating" aria-label="Rating: 5 out of 5">&#9733;&#9733;&#9733;&#9733;&#9733;</p>
+                </div>
+            </article>
+        </section>
+
+        <section id="add-review">
+            <h2>Add a Review</h2>
+            <p class="reviewing-target">Sign in to share your experience at this place.</p>
+            <a href="add_review.html?id=1" class="add-review-button">Add a Review</a>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 HBnB Evolution. All rights reserved.</p>
+    </footer>
+</body>
+</html>
