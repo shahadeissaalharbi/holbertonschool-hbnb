@@ -12,7 +12,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    checkAuthentication();
+    if (document.getElementById('places-list')) {
+        checkAuthentication();
+    }
 
     const priceFilter = document.getElementById('price-filter');
     if (priceFilter) {
@@ -22,17 +24,47 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// ---------- Cookie helper ----------
+async function loginUser(email, password) {
+    try {
+        const response = await fetch(`${API_URL}/auth/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            document.cookie = `token=${data.access_token}; path=/`;
+            window.location.href = 'index.html';
+        } else {
+            const errorData = await response.json().catch(() => ({}));
+            displayLoginError(errorData.message || 'Invalid email or password');
+        }
+    } catch (error) {
+        displayLoginError('Could not reach the server. Please try again.');
+    }
+}
+
+function displayLoginError(message) {
+    let errorEl = document.getElementById('login-error');
+    if (!errorEl) {
+        errorEl = document.createElement('p');
+        errorEl.id = 'login-error';
+        errorEl.style.color = 'red';
+        errorEl.style.marginTop = '10px';
+        errorEl.style.textAlign = 'center';
+        document.querySelector('.submit-button').insertAdjacentElement('afterend', errorEl);
+    }
+    errorEl.textContent = message;
+}
+
 function getCookie(name) {
     const value = `; ${document.cookie}`;
     const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) {
-        return parts.pop().split(';').shift();
-    }
+    if (parts.length === 2) return parts.pop().split(';').shift();
     return null;
 }
 
-// ---------- Authentication check ----------
 function checkAuthentication() {
     const token = getCookie('token');
     const loginLink = document.querySelector('.login-button');
@@ -46,15 +78,12 @@ function checkAuthentication() {
     }
 }
 
-// ---------- Fetch places ----------
 async function fetchPlaces(token) {
     try {
         const headers = { 'Content-Type': 'application/json' };
-        if (token) {
-            headers['Authorization'] = `Bearer ${token}`;
-        }
+        if (token) headers['Authorization'] = `Bearer ${token}`;
 
-        const response = await fetch(`${API_URL}/places`, {
+        const response = await fetch(`${API_URL}/places/`, {
             method: 'GET',
             headers: headers
         });
@@ -70,12 +99,9 @@ async function fetchPlaces(token) {
     }
 }
 
-// ---------- Populate places list ----------
 function displayPlaces(places) {
     const placesList = document.getElementById('places-list');
     if (!placesList) return;
-
-    console.log('Places data:', places);
 
     placesList.innerHTML = '';
 
@@ -85,7 +111,7 @@ function displayPlaces(places) {
         placeCard.dataset.price = place.price;
 
         placeCard.innerHTML = `
-            <h2>${place.title || place.name}</h2>
+            <h2>${place.title}</h2>
             <p class="place-price">Price per night: $${place.price}</p>
             <a href="place.html?id=${place.id}" class="details-button">View Details</a>
         `;
@@ -94,13 +120,10 @@ function displayPlaces(places) {
     });
 }
 
-// ---------- Client-side filtering ----------
 function filterPlacesByPrice(maxPrice) {
     const placeCards = document.querySelectorAll('.place-card');
-
     placeCards.forEach((card) => {
         const price = parseFloat(card.dataset.price);
-
         if (maxPrice === 'all' || price <= parseFloat(maxPrice)) {
             card.style.display = 'block';
         } else {
