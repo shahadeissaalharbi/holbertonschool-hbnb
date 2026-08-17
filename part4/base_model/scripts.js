@@ -24,6 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+// --Login--
 async function loginUser(email, password) {
     try {
         const response = await fetch(`${API_URL}/auth/login`, {
