@@ -1,6 +1,12 @@
 const API_URL = 'http://127.0.0.1:5000/api/v1';
 
 document.addEventListener('DOMContentLoaded', () => {
+    const token = getCookie('token');
+    const loginLink = document.querySelector('.login-button');
+    if (loginLink) {
+        loginLink.style.display = token ? 'none' : 'block';
+    }
+
     const loginForm = document.getElementById('login-form');
 
     if (loginForm) {
@@ -31,17 +37,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('review-form')) {
         setupReviewForm();
     }
-
-    document.addEventListener('DOMContentLoaded', () => {
-    // Global login-button visibility — runs on every page
-    const token = getCookie('token');
-    const loginLink = document.querySelector('.login-button');
-    if (loginLink) {
-        loginLink.style.display = token ? 'none' : 'block';
-    }
-
-    const loginForm = document.getElementById('login-form');
-    
 });
 
 // --Login--
@@ -55,7 +50,7 @@ async function loginUser(email, password) {
 
         if (response.ok) {
             const data = await response.json();
-            document.cookie = `token=${data.access_token}; path=/`;
+            document.cookie = `token=${data.access_token}; path=/; max-age=86400`;
             window.location.href = 'index.html';
         } else {
             const errorData = await response.json().catch(() => ({}));
@@ -74,7 +69,10 @@ function displayLoginError(message) {
         errorEl.style.color = 'red';
         errorEl.style.marginTop = '10px';
         errorEl.style.textAlign = 'center';
-        document.querySelector('.submit-button').insertAdjacentElement('afterend', errorEl);
+        const submitBtn = document.querySelector('.submit-button');
+        if (submitBtn) {
+            submitBtn.insertAdjacentElement('afterend', errorEl);
+        }
     }
     errorEl.textContent = message;
 }
@@ -157,7 +155,7 @@ function filterPlacesByPrice(maxPrice) {
 
 function getPlaceIdFromURL() {
     const params = new URLSearchParams(window.location.search);
-    return params.get('id');
+    return params.get('id') || params.get('place_id');
 }
 
 function checkPlaceAuthentication(placeId) {
@@ -260,7 +258,7 @@ function displayReviews(reviews) {
             <div class="review-body">
                 <p class="review-user">${review.user ? review.user.first_name : 'Anonymous'}</p>
                 <p class="review-comment">${review.text}</p>
-                <p class="review-rating" aria-label="Rating: ${review.rating} out of 5">${'★'.repeat(review.rating)}${'☆'.repeat(5 - review.rating)}</p>
+                <p class="review-rating" aria-label="Rating: ${review.rating} out of 5">${'★'.repeat(review.rating || 0)}${'☆'.repeat(5 - (review.rating || 0))}</p>
             </div>
         `;
 
@@ -281,18 +279,29 @@ function setupReviewForm() {
     const placeId = getPlaceIdFromURL();
     const reviewForm = document.getElementById('review-form');
 
-    reviewForm.addEventListener('submit', async (event) => {
-        event.preventDefault();
+    if (reviewForm) {
+        reviewForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
 
-        const reviewText = document.getElementById('review-form').value.trim();
+            const reviewInput = document.getElementById('review');
+            const ratingInput = document.getElementById('rating');
 
-        if (!reviewText) {
-            alert('You must write review text before submitting');
-            return;
-        }
+            const reviewText = reviewInput ? reviewInput.value.trim() : '';
+            const rating = ratingInput ? parseInt(ratingInput.value, 10) : null;
 
-        await submitReview(token, placeId, reviewText);
-    });
+            if (!reviewText) {
+                alert('You must write review text before submitting');
+                return;
+            }
+
+            if (!rating) {
+                alert('Please select a rating');
+                return;
+            }
+
+            await submitReview(token, placeId, reviewText, rating);
+        });
+    }
 }
 
 async function submitReview(token, placeId, reviewText, rating) {
@@ -325,18 +334,3 @@ function handleReviewResponse(response) {
         alert('Failed to submit review, please try again');
     }
 }
-
-reviewForm.addEventListener('submit', async (event) => {
-    event.preventDefault();
-
-    const reviewText = document.getElementById('review-text').value.trim();
-    const rating = parseInt(document.getElementById('review-rating').value, 10); // adjust id
-
-    if (!reviewText) {
-        alert('You must write review text before submitting');
-        return;
-    }
-
-    await submitReview(token, placeId, reviewText, rating);
-    });
-})
