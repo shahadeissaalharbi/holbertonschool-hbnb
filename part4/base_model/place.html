@@ -20,55 +20,32 @@
     </header>
 
     <main>
-        <h1>Beautiful Beach House</h1>
+        <h1 id="place-name">Beautiful Beach House</h1>
 
-        <section class="place-details" aria-label="Place information">
-            <div class="place-info">
-                <p><span class="host-name">Host:</span> John Doe</p>
-                <p><span class="place-price-value">Price per night:</span> $150</p>
-                <p><strong>Description:</strong> A beautiful beach house with amazing views of the ocean. Perfect for a relaxing family getaway just steps from the sand.</p>
-                <div>
-                    <strong>Amenities:</strong>
-                    <ul class="amenities-list">
-                        <li><img src="images/icon_wifi.png" alt=""> WiFi</li>
-                        <li><img src="images/icon_bed.png" alt=""> 3 Bedrooms</li>
-                        <li><img src="images/icon_bath.png" alt=""> 2 Bathrooms</li>
-                        <li>Pool</li>
-                        <li>Air Conditioning</li>
-                    </ul>
-                </div>
+        <section class="place-details" id="place-details" aria-label="Place information">
+            <div class="place-info" id="place-info">
+                <!-- سيتم تعبئة هذا القسم ديناميكيًا عبر JavaScript -->
             </div>
         </section>
 
         <section id="reviews" aria-label="Reviews">
             <h2>Reviews</h2>
-
-            <article class="review-card">
-                <div class="review-body">
-                    <p class="review-user">Jane Smith</p>
-                    <p class="review-comment">Great place to stay! Clean, comfortable and close to everything.</p>
-                    <p class="review-rating" aria-label="Rating: 4 out of 5">&#9733;&#9733;&#9733;&#9733;&#9734;</p>
-                </div>
-            </article>
-
-            <article class="review-card">
-                <div class="review-body">
-                    <p class="review-user">Robert Brown</p>
-                    <p class="review-comment">Amazing location and very comfortable. Would book again.</p>
-                    <p class="review-rating" aria-label="Rating: 5 out of 5">&#9733;&#9733;&#9733;&#9733;&#9733;</p>
-                </div>
-            </article>
+            <div id="reviews-list">
+                <!-- سيتم تعبئة التقييمات هنا ديناميكيًا -->
+            </div>
         </section>
 
         <section id="add-review">
             <h2>Add a Review</h2>
             <p class="reviewing-target">Sign in to share your experience at this place.</p>
-            <a href="add_review.html?id=1" class="add-review-button">Add a Review</a>
+            <a href="add_review.html?id=1" id="add-review-link" class="add-review-button">Add a Review</a>
         </section>
     </main>
 
     <footer>
         <p>&copy; 2026 HBnB Evolution. All rights reserved.</p>
     </footer>
+
+    <script src="scripts.js"></script>
 </body>
 </html>
