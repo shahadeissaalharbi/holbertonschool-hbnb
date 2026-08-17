@@ -284,7 +284,7 @@ function setupReviewForm() {
     reviewForm.addEventListener('submit', async (event) => {
         event.preventDefault();
 
-        const reviewText = document.getElementById('review-text').value.trim();
+        const reviewText = document.getElementById('review-form').value.trim();
 
         if (!reviewText) {
             alert('You must write review text before submitting');
