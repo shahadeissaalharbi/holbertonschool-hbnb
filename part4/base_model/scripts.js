@@ -31,6 +31,17 @@ document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('review-form')) {
         setupReviewForm();
     }
+
+    document.addEventListener('DOMContentLoaded', () => {
+    // Global login-button visibility — runs on every page
+    const token = getCookie('token');
+    const loginLink = document.querySelector('.login-button');
+    if (loginLink) {
+        loginLink.style.display = token ? 'none' : 'block';
+    }
+
+    const loginForm = document.getElementById('login-form');
+    
 });
 
 // --Login--
@@ -276,7 +287,7 @@ function setupReviewForm() {
         const reviewText = document.getElementById('review-text').value.trim();
 
         if (!reviewText) {
-            alert('لازم تكتبين نص المراجعة قبل الإرسال');
+            alert('You must write review text before submitting');
             return;
         }
 
@@ -284,7 +295,7 @@ function setupReviewForm() {
     });
 }
 
-async function submitReview(token, placeId, reviewText) {
+async function submitReview(token, placeId, reviewText, rating) {
     try {
         const response = await fetch(`${API_URL}/places/${placeId}/reviews`, {
             method: 'POST',
@@ -293,23 +304,39 @@ async function submitReview(token, placeId, reviewText) {
                 'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify({
-                text: reviewText
+                text: reviewText,
+                rating: rating
             })
         });
 
         handleReviewResponse(response);
     } catch (error) {
         console.error('Error submitting review:', error);
-        alert('حدث خطأ بالاتصال، حاولي مرة ثانية');
+        alert('A connection error occurred, please try again');
     }
 }
 
 function handleReviewResponse(response) {
     const form = document.getElementById('review-form');
     if (response.ok) {
-        alert('تم إرسال المراجعة بنجاح!');
+        alert('Review submitted successfully!');
         if (form) form.reset();
     } else {
-        alert('فشل إرسال المراجعة، حاولي مرة ثانية');
+        alert('Failed to submit review, please try again');
     }
 }
+
+reviewForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    const reviewText = document.getElementById('review-text').value.trim();
+    const rating = parseInt(document.getElementById('review-rating').value, 10); // adjust id
+
+    if (!reviewText) {
+        alert('You must write review text before submitting');
+        return;
+    }
+
+    await submitReview(token, placeId, reviewText, rating);
+    });
+})
