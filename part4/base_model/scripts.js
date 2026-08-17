@@ -27,6 +27,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const placeId = getPlaceIdFromURL();
         checkPlaceAuthentication(placeId);
     }
+
+    if (document.getElementById('review-form')) {
+        setupReviewForm();
+    }
 });
 
 // --Login--
@@ -251,4 +255,61 @@ function displayReviews(reviews) {
 
         reviewsList.appendChild(card);
     });
+}
+
+// ---- Add Review Page ----
+
+function setupReviewForm() {
+    const token = getCookie('token');
+
+    if (!token) {
+        window.location.href = 'index.html';
+        return;
+    }
+
+    const placeId = getPlaceIdFromURL();
+    const reviewForm = document.getElementById('review-form');
+
+    reviewForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const reviewText = document.getElementById('review-text').value.trim();
+
+        if (!reviewText) {
+            alert('لازم تكتبين نص المراجعة قبل الإرسال');
+            return;
+        }
+
+        await submitReview(token, placeId, reviewText);
+    });
+}
+
+async function submitReview(token, placeId, reviewText) {
+    try {
+        const response = await fetch(`${API_URL}/places/${placeId}/reviews`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                text: reviewText
+            })
+        });
+
+        handleReviewResponse(response);
+    } catch (error) {
+        console.error('Error submitting review:', error);
+        alert('حدث خطأ بالاتصال، حاولي مرة ثانية');
+    }
+}
+
+function handleReviewResponse(response) {
+    const form = document.getElementById('review-form');
+    if (response.ok) {
+        alert('تم إرسال المراجعة بنجاح!');
+        if (form) form.reset();
+    } else {
+        alert('فشل إرسال المراجعة، حاولي مرة ثانية');
+    }
 }
