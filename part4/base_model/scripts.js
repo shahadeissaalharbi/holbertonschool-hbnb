@@ -306,13 +306,15 @@ function setupReviewForm() {
 
 async function submitReview(token, placeId, reviewText, rating) {
     try {
-        const response = await fetch(`${API_URL}/places/${placeId}/reviews`, {
+        // Correct endpoint for creating reviews in HBnB Project
+        const response = await fetch(`${API_URL}/reviews/`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify({
+                place_id: placeId,
                 text: reviewText,
                 rating: rating
             })
