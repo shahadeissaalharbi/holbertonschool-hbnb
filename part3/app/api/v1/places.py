@@ -53,14 +53,15 @@ class PlaceList(Resource):
 
     @api.response(200, 'List of places retrieved successfully')
     def get(self):
-        """Retrieve a list of all places with basic information (public)"""
         places = facade.get_all_places()
         return [{
             'id': p.id,
-            'title': p.title,
-            'latitude': p.latitude,
-            'longitude': p.longitude
-        } for p in places], 200
+         'title': p.title,
+         'description': p.description,
+         'price': p.price,
+         'latitude': p.latitude,
+         'longitude': p.longitude
+    } for p in places], 200
 
 
 @api.route('/<place_id>')
