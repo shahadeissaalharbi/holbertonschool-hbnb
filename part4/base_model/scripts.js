@@ -223,8 +223,7 @@ function displayPlaceDetails(place) {
         amenitiesLabel.textContent = 'Amenities:';
         amenitiesWrap.appendChild(amenitiesLabel);
 
-        const amenitiesList = document.createElement('ul');
-        amenitiesList.className = 'amenities-list';
+        const amenitiesList = document.className = 'amenities-list';
         (place.amenities || []).forEach((amenity) => {
             const li = document.createElement('li');
             li.textContent = amenity.name;
@@ -299,6 +298,11 @@ function setupReviewForm() {
                 return;
             }
 
+            if (!placeId) {
+                alert('Place ID is missing from the URL');
+                return;
+            }
+
             await submitReview(token, placeId, reviewText, rating);
         });
     }
@@ -306,7 +310,6 @@ function setupReviewForm() {
 
 async function submitReview(token, placeId, reviewText, rating) {
     try {
-        // Correct endpoint for creating reviews in HBnB Project
         const response = await fetch(`${API_URL}/reviews/`, {
             method: 'POST',
             headers: {
@@ -314,9 +317,10 @@ async function submitReview(token, placeId, reviewText, rating) {
                 'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify({
-                place_id: placeId,
                 text: reviewText,
-                rating: rating
+                rating: rating,
+                place_id: placeId,
+                user_id: getUserIdFromToken(token)
             })
         });
 
@@ -326,7 +330,20 @@ async function submitReview(token, placeId, reviewText, rating) {
         alert('A connection error occurred, please try again');
     }
 }
-
+function getUserIdFromToken(token) {
+    try {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        
+        const payload = JSON.parse(jsonPayload);
+        return payload.sub || payload.id || payload.user_id;
+    } catch (e) {
+        return null;
+    }
+}
 function handleReviewResponse(response) {
     const form = document.getElementById('review-form');
     if (response.ok) {

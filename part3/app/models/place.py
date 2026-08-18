@@ -24,6 +24,7 @@ class Place(BaseModel):
     # Relationships
     reviews = relationship('Review', backref='place', lazy=True,
                             cascade='all, delete-orphan')
+    
     amenities = relationship('Amenity', secondary=PlaceAmenity.__table__,
                           lazy='subquery',
                           backref=db.backref('places', lazy=True))
@@ -70,3 +71,6 @@ class Place(BaseModel):
         if not (-180.0 <= value <= 180.0):
             raise ValueError("longitude must be between -180 and 180")
         return float(value)
+
+
+        
