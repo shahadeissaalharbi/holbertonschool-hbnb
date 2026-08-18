@@ -6,10 +6,10 @@ from app.models.base_model import BaseModel
 
 class PlaceAmenity(BaseModel):
     """Represents the link between a Place and an Amenity"""
-    __tablename__ = 'place_amenity'
+    __tablename__ = 'Place_Amenity'
 
-    place_id = db.Column(db.String(36), db.ForeignKey('places.id'), nullable=False)
-    amenity_id = db.Column(db.String(36), db.ForeignKey('amenities.id'), nullable=False)
+    place_id = db.Column(db.String(36), db.ForeignKey('Place.id'), nullable=False)
+    amenity_id = db.Column(db.String(36), db.ForeignKey('Amenity.id'), nullable=False)
 
     __table_args__ = (
         db.UniqueConstraint('place_id', 'amenity_id', name='unique_place_amenity'),

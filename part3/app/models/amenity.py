@@ -7,7 +7,7 @@ from app.models.base_model import BaseModel
 
 class Amenity(BaseModel):
     """Represents an amenity that can be linked to a place"""
-    __tablename__ = 'amenities'
+    __tablename__ = 'Amenity'
 
     name = db.Column(db.String(50), nullable=False)
 

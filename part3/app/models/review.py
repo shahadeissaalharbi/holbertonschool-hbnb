@@ -7,15 +7,15 @@ from app.models.base_model import BaseModel
 
 class Review(BaseModel):
     """Represents a review left by a user for a place"""
-    __tablename__ = 'reviews'
+    __tablename__ = 'Review'
 
     text = db.Column(db.String(500), nullable=False)
     rating = db.Column(db.Integer, nullable=False)
 
     # Foreign keys
-    user_id = db.Column(db.String(36), db.ForeignKey('users.id'),
+    user_id = db.Column(db.String(36), db.ForeignKey('Users.id'),
                          nullable=False)
-    place_id = db.Column(db.String(36), db.ForeignKey('places.id'),
+    place_id = db.Column(db.String(36), db.ForeignKey('Place.id'),
                           nullable=False)
 
     def __init__(self, text, rating, user_id, place_id):

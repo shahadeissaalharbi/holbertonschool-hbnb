@@ -8,7 +8,7 @@ from sqlalchemy.orm import validates, relationship
 
 class User(BaseModel):
     """Represents a user of the HBnB application"""
-    __tablename__ = 'users'
+    __tablename__ = 'Users'
 
     first_name = db.Column(db.String(50), nullable=False)
     last_name = db.Column(db.String(50), nullable=False)

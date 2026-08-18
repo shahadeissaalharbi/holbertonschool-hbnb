@@ -9,16 +9,18 @@ from app.models.place_amenity import PlaceAmenity
 
 class Place(BaseModel):
     """Represents a place that can be listed and reviewed"""
-    __tablename__ = 'places'
+    __tablename__ = 'Place'
 
     title = db.Column(db.String(100), nullable=False)
     description = db.Column(db.String(500), nullable=True)
     price = db.Column(db.Float, nullable=False)
     latitude = db.Column(db.Float, nullable=False)
     longitude = db.Column(db.Float, nullable=False)
+    image_url = db.Column(db.String(500), nullable=True)
+    images = db.Column(db.String(2000), nullable=True)  # comma-separated URLs
 
     # Foreign key to User (One-to-Many: User -> Place)
-    user_id = db.Column(db.String(36), db.ForeignKey('users.id'),
+    user_id = db.Column(db.String(36), db.ForeignKey('Users.id'),
                          nullable=False)
 
     # Relationships

@@ -3,7 +3,7 @@
 -- ==========================================================
 
 -- Administrator User (password: admin1234 hashed with bcrypt)
-INSERT INTO User (id, first_name, last_name, email, password, is_admin)
+INSERT INTO Users (id, first_name, last_name, email, password, is_admin)
 VALUES (
     '36c9050e-ddd3-4c3b-9731-9f487208bbc1',
     'Admin',

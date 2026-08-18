@@ -129,6 +129,10 @@ function displayPlaces(places) {
         placeCard.className = 'place-card';
         placeCard.dataset.price = place.price;
 
+        if (place.image_url) {
+            placeCard.style.backgroundImage = `url('${place.image_url}')`;
+        }
+
         placeCard.innerHTML = `
             <h2>${place.title}</h2>
             <p class="place-price">Price per night: $${place.price}</p>
@@ -181,30 +185,46 @@ async function fetchPlaceDetails(token, placeId) {
     try {
         const headers = { 'Content-Type': 'application/json' };
         if (token) headers['Authorization'] = `Bearer ${token}`;
+        const [placeResponse, reviewsResponse] = await Promise.all([
+            fetch(`${API_URL}/places/${placeId}`, { method: 'GET', headers }),
+            fetch(`${API_URL}/places/${placeId}/reviews`, { method: 'GET', headers: { 'Content-Type': 'application/json' } })
+        ]);
 
-        const response = await fetch(`${API_URL}/places/${placeId}`, {
-            method: 'GET',
-            headers: headers
-        });
-
-        if (response.ok) {
-            const place = await response.json();
-            displayPlaceDetails(place);
-        } else {
-            console.error('Failed to fetch place details:', response.status);
+        if (!placeResponse.ok) {
+            console.error('Failed to fetch place details:', placeResponse.status);
+            return;
         }
+
+        const place = await placeResponse.json();
+        const reviews = reviewsResponse.ok ? await reviewsResponse.json() : [];
+
+        displayPlaceDetails(place, reviews);
     } catch (error) {
         console.error('Error fetching place details:', error);
     }
 }
 
-function displayPlaceDetails(place) {
+function displayPlaceDetails(place, reviews) {
     const nameEl = document.getElementById('place-name');
     if (nameEl) nameEl.textContent = place.title;
 
     const placeInfo = document.getElementById('place-info');
     if (placeInfo) {
         placeInfo.innerHTML = '';
+
+        // Image gallery
+        if (place.images && place.images.length > 0) {
+            const gallery = document.createElement('div');
+            gallery.className = 'place-gallery';
+            place.images.forEach((url) => {
+                const img = document.createElement('img');
+                img.src = url.trim();
+                img.alt = place.title;
+                img.className = 'gallery-image';
+                gallery.appendChild(img);
+            });
+            placeInfo.appendChild(gallery);
+        }
 
         const hostEl = document.createElement('p');
         hostEl.innerHTML = `<span class="host-name">Host:</span> ${place.owner ? place.owner.first_name + ' ' + place.owner.last_name : 'Unknown'}`;
@@ -223,7 +243,8 @@ function displayPlaceDetails(place) {
         amenitiesLabel.textContent = 'Amenities:';
         amenitiesWrap.appendChild(amenitiesLabel);
 
-        const amenitiesList = document.className = 'amenities-list';
+        const amenitiesList = document.createElement('ul');
+        amenitiesList.className = 'amenities-list';
         (place.amenities || []).forEach((amenity) => {
             const li = document.createElement('li');
             li.textContent = amenity.name;
@@ -233,7 +254,7 @@ function displayPlaceDetails(place) {
         placeInfo.appendChild(amenitiesWrap);
     }
 
-    displayReviews(place.reviews || []);
+    displayReviews(reviews || []);
 }
 
 function displayReviews(reviews) {
@@ -253,9 +274,11 @@ function displayReviews(reviews) {
         const card = document.createElement('article');
         card.className = 'review-card';
 
+        // The reviews-list endpoint only returns id/text/rating right now,
+        // so there's no reviewer name to show without a backend change.
         card.innerHTML = `
             <div class="review-body">
-                <p class="review-user">${review.user ? review.user.first_name : 'Anonymous'}</p>
+                <p class="review-user">${review.user && review.user.first_name ? review.user.first_name : 'Anonymous'}</p>
                 <p class="review-comment">${review.text}</p>
                 <p class="review-rating" aria-label="Rating: ${review.rating} out of 5">${'★'.repeat(review.rating || 0)}${'☆'.repeat(5 - (review.rating || 0))}</p>
             </div>
@@ -278,6 +301,12 @@ function setupReviewForm() {
     const placeId = getPlaceIdFromURL();
     const reviewForm = document.getElementById('review-form');
 
+    if (!placeId) {
+        alert('Place ID is missing from the URL');
+        window.location.href = 'index.html';
+        return;
+    }
+
     if (reviewForm) {
         reviewForm.addEventListener('submit', async (event) => {
             event.preventDefault();
@@ -298,11 +327,6 @@ function setupReviewForm() {
                 return;
             }
 
-            if (!placeId) {
-                alert('Place ID is missing from the URL');
-                return;
-            }
-
             await submitReview(token, placeId, reviewText, rating);
         });
     }
@@ -319,37 +343,35 @@ async function submitReview(token, placeId, reviewText, rating) {
             body: JSON.stringify({
                 text: reviewText,
                 rating: rating,
-                place_id: placeId,
-                user_id: getUserIdFromToken(token)
+                place_id: placeId
             })
         });
 
-        handleReviewResponse(response);
+        await handleReviewResponse(response);
     } catch (error) {
         console.error('Error submitting review:', error);
         alert('A connection error occurred, please try again');
     }
 }
-function getUserIdFromToken(token) {
-    try {
-        const base64Url = token.split('.')[1];
-        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-        }).join(''));
-        
-        const payload = JSON.parse(jsonPayload);
-        return payload.sub || payload.id || payload.user_id;
-    } catch (e) {
-        return null;
-    }
-}
-function handleReviewResponse(response) {
+
+async function handleReviewResponse(response) {
     const form = document.getElementById('review-form');
     if (response.ok) {
         alert('Review submitted successfully!');
         if (form) form.reset();
     } else {
-        alert('Failed to submit review, please try again');
+        
+        let message = 'Failed to submit review, please try again';
+        try {
+            const data = await response.json();
+            if (data && data.error) {
+                message = data.error;
+            } else if (data && data.message) {
+                message = data.message;
+            }
+        } catch (e) {
+            // if response body wasn't JSON — keep the default message
+        }
+        alert(message);
     }
 }

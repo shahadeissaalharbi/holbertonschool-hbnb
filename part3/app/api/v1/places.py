@@ -60,7 +60,8 @@ class PlaceList(Resource):
          'description': p.description,
          'price': p.price,
          'latitude': p.latitude,
-         'longitude': p.longitude
+         'longitude': p.longitude,
+         'image_url': p.image_url
     } for p in places], 200
 
 
@@ -81,6 +82,8 @@ class PlaceResource(Resource):
             'price': place.price,
             'latitude': place.latitude,
             'longitude': place.longitude,
+            'image_url': place.image_url,
+            'images': place.images.split(',') if place.images else [],
             'owner': {
                 'id': place.owner.id,
                 'first_name': place.owner.first_name,
@@ -158,5 +161,6 @@ class PlaceReviewList(Resource):
         return [{
             'id': r.id,
             'text': r.text,
-            'rating': r.rating
+            'rating': r.rating,
+            'user_id': r.user.id
         } for r in reviews], 200

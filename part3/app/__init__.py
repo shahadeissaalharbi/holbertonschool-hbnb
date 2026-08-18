@@ -42,9 +42,10 @@ def create_app(config_class="config.DevelopmentConfig"):
         from app.models.place import Place
         from app.models.review import Review
         from app.models.amenity import Amenity
+        from app.persistence.seed_places import seed_places
     
         db.create_all()
-       
+        seed_places()
         
     return app
 

@@ -6,7 +6,7 @@
   --color-primary: #ff8c00;
   --color-primary-dark: #e67600;
   --color-text: #222831;
-  --color-text-light: #5f6774;
+  --color-text-light: #ffffff;
   --color-bg: #f4f4f4;
   --color-card-bg: #ffffff;
   --color-border: #ddd;
@@ -381,4 +381,140 @@ footer {
   #login-form {
     padding: 1.5rem;
   }
+}
+
+/* ---------------------------------
+   place card - index.html
+   --------------------------------- */
+#places-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.place-card {
+    position: relative;
+    width: 300px;
+    height: 220px;
+    margin: 20px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    overflow: hidden;
+
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+
+    color: #fff;
+    font-family: inherit;
+}
+
+.place-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.75) 0%, rgba(0, 0, 0, 0.1) 60%);
+    z-index: 0;
+    transition: background .3s;
+}
+
+.place-card:hover::before {
+    background: rgba(0, 0, 0, 0.6);
+}
+
+.place-card h2,
+.place-card .place-price {
+    position: relative;
+    z-index: 1;
+    transition: opacity .3s;
+}
+
+.place-card h2 {
+    margin: 0 0 4px;
+    font-size: 1.2rem;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, .6);
+}
+
+.place-card .place-price {
+    margin: 0;
+    font-size: .95rem;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, .6);
+}
+
+/* fade out name/price on hover */
+.place-card:hover h2,
+.place-card:hover .place-price {
+    opacity: 0;
+}
+
+/* details button: hidden, centered, fades in on hover */
+.place-card .details-button {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+
+    padding: 8px 20px;
+    border: 1px solid #fff;
+    border-radius: 1000px;
+    color: #fff;
+    text-decoration: none;
+    font-size: .9rem;
+
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .3s;
+}
+
+.place-card:hover .details-button {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.place-card .details-button:hover {
+    background: rgba(255, 255, 255, .15);
+}
+
+/* Interior photo gallery - place.html */
+.place-gallery {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 10px 0 16px;
+    margin-bottom: 16px;
+
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+}
+
+.place-gallery .gallery-image {
+    flex: 0 0 auto;
+    width: 280px;
+    height: 190px;
+    object-fit: cover;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+
+    scroll-snap-align: start;
+}
+
+/* optional: nicer scrollbar on browsers that support it */
+.place-gallery::-webkit-scrollbar {
+    height: 8px;
+}
+
+.place-gallery::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 10px;
+}
+
+.place-gallery::-webkit-scrollbar-track {
+    background: transparent;
 }
