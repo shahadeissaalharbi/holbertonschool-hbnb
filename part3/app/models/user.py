@@ -19,7 +19,7 @@ class User(BaseModel):
     # Relationships
     places = relationship('Place', backref='owner', lazy=True,
                            cascade='all, delete-orphan')
-    reviews = relationship('Review', backref='author', lazy=True,
+    reviews = relationship('Review', backref='user', lazy=True,
                             cascade='all, delete-orphan')
 
     def __init__(self, first_name, last_name, email, password=None, is_admin=False):

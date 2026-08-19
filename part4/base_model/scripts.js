@@ -185,6 +185,10 @@ async function fetchPlaceDetails(token, placeId) {
     try {
         const headers = { 'Content-Type': 'application/json' };
         if (token) headers['Authorization'] = `Bearer ${token}`;
+
+        // Place details and its reviews come from two separate existing
+        // endpoints — GET /places/<id> doesn't include reviews, so we fetch
+        // GET /places/<id>/reviews alongside it and merge them client-side.
         const [placeResponse, reviewsResponse] = await Promise.all([
             fetch(`${API_URL}/places/${placeId}`, { method: 'GET', headers }),
             fetch(`${API_URL}/places/${placeId}/reviews`, { method: 'GET', headers: { 'Content-Type': 'application/json' } })
@@ -198,13 +202,13 @@ async function fetchPlaceDetails(token, placeId) {
         const place = await placeResponse.json();
         const reviews = reviewsResponse.ok ? await reviewsResponse.json() : [];
 
-        displayPlaceDetails(place, reviews);
+        displayPlaceDetails(place, reviews, token);
     } catch (error) {
         console.error('Error fetching place details:', error);
     }
 }
 
-function displayPlaceDetails(place, reviews) {
+function displayPlaceDetails(place, reviews, token) {
     const nameEl = document.getElementById('place-name');
     if (nameEl) nameEl.textContent = place.title;
 
@@ -243,6 +247,12 @@ function displayPlaceDetails(place, reviews) {
         amenitiesLabel.textContent = 'Amenities:';
         amenitiesWrap.appendChild(amenitiesLabel);
 
+        // FIX: this used to be `document.className = 'amenities-list'`, which
+        // set a className on `document` and stored the resulting STRING in
+        // amenitiesList (not an element). Calling .appendChild() on a string
+        // threw a TypeError every time, silently swallowed by the catch block
+        // in fetchPlaceDetails — killing description, amenities, and reviews
+        // rendering all at once, every single page load.
         const amenitiesList = document.createElement('ul');
         amenitiesList.className = 'amenities-list';
         (place.amenities || []).forEach((amenity) => {
@@ -254,10 +264,10 @@ function displayPlaceDetails(place, reviews) {
         placeInfo.appendChild(amenitiesWrap);
     }
 
-    displayReviews(reviews || []);
+    displayReviews(reviews || [], token);
 }
 
-function displayReviews(reviews) {
+function displayReviews(reviews, token) {
     const reviewsList = document.getElementById('reviews-list');
     if (!reviewsList) return;
 
@@ -270,12 +280,15 @@ function displayReviews(reviews) {
         return;
     }
 
+    const currentUserId = token ? getUserIdFromToken(token) : null;
+
     reviews.forEach((review) => {
         const card = document.createElement('article');
         card.className = 'review-card';
 
-        // The reviews-list endpoint only returns id/text/rating right now,
-        // so there's no reviewer name to show without a backend change.
+        // The reviews-list endpoint only returns id/text/rating/user_id
+        // right now, so there's no reviewer name to show without a
+        // further backend change.
         card.innerHTML = `
             <div class="review-body">
                 <p class="review-user">${review.user && review.user.first_name ? review.user.first_name : 'Anonymous'}</p>
@@ -284,9 +297,75 @@ function displayReviews(reviews) {
             </div>
         `;
 
+        // Only show a Delete button on reviews the logged-in user wrote
+        // themselves. The server still enforces ownership independently
+        // on DELETE, so this is just UX — not the security boundary.
+        if (currentUserId && review.user_id === currentUserId) {
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'delete-review-button';
+            deleteBtn.type = 'button';
+            deleteBtn.setAttribute('aria-label', 'Delete review');
+            deleteBtn.innerHTML = '<img src="images/icon_trash.png" alt="" class="trash-icon">';
+            deleteBtn.addEventListener('click', () => {
+                deleteReview(review.id, token, card);
+            });
+            card.querySelector('.review-body').appendChild(deleteBtn);
+        }
+
         reviewsList.appendChild(card);
     });
 }
+
+async function deleteReview(reviewId, token, cardElement) {
+    const confirmed = window.confirm('Delete this review? This cannot be undone.');
+    if (!confirmed) return;
+
+    try {
+        const response = await fetch(`${API_URL}/reviews/${reviewId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (response.ok) {
+            cardElement.remove();
+        } else {
+            let message = 'Failed to delete review, please try again';
+            try {
+                const data = await response.json();
+                if (data && data.error) {
+                    message = data.error;
+                } else if (data && data.message) {
+                    message = data.message;
+                }
+            } catch (e) {
+                // response body wasn't JSON — keep the default message
+            }
+            alert(message);
+        }
+    } catch (error) {
+        console.error('Error deleting review:', error);
+        alert('A connection error occurred, please try again');
+    }
+}
+
+function getUserIdFromToken(token) {
+    try {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+
+        const payload = JSON.parse(jsonPayload);
+        return payload.sub || payload.id || payload.user_id;
+    } catch (e) {
+        return null;
+    }
+}
+
 
 // ---- Add Review Page ----
 
@@ -302,10 +381,12 @@ function setupReviewForm() {
     const reviewForm = document.getElementById('review-form');
 
     if (!placeId) {
-        alert('Place ID is missing from the URL');
-        window.location.href = 'index.html';
+        displayReviewMessage('Place ID is missing from the URL', 'error');
+        setTimeout(() => { window.location.href = 'index.html'; }, 1500);
         return;
     }
+
+    displayReviewingPlaceName(placeId);
 
     if (reviewForm) {
         reviewForm.addEventListener('submit', async (event) => {
@@ -318,17 +399,39 @@ function setupReviewForm() {
             const rating = ratingInput ? parseInt(ratingInput.value, 10) : null;
 
             if (!reviewText) {
-                alert('You must write review text before submitting');
+                displayReviewMessage('You must write review text before submitting', 'error');
                 return;
             }
 
             if (!rating) {
-                alert('Please select a rating');
+                displayReviewMessage('Please select a rating', 'error');
                 return;
             }
 
             await submitReview(token, placeId, reviewText, rating);
         });
+    }
+}
+
+async function displayReviewingPlaceName(placeId) {
+    const heading = document.getElementById('reviewing-place-name');
+    if (!heading) return;
+
+    try {
+        const response = await fetch(`${API_URL}/places/${placeId}`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' }
+        });
+
+        if (response.ok) {
+            const place = await response.json();
+            heading.textContent = `Reviewing: ${place.title}`;
+        } else {
+            heading.textContent = 'Reviewing: this place';
+        }
+    } catch (error) {
+        console.error('Error fetching place name:', error);
+        heading.textContent = 'Reviewing: this place';
     }
 }
 
@@ -347,20 +450,29 @@ async function submitReview(token, placeId, reviewText, rating) {
             })
         });
 
-        await handleReviewResponse(response);
+        await handleReviewResponse(response, placeId);
     } catch (error) {
         console.error('Error submitting review:', error);
-        alert('A connection error occurred, please try again');
+        displayReviewMessage('A connection error occurred, please try again', 'error');
     }
 }
 
-async function handleReviewResponse(response) {
+async function handleReviewResponse(response, placeId) {
     const form = document.getElementById('review-form');
     if (response.ok) {
-        alert('Review submitted successfully!');
+        console.log('SUCCESS branch reached, placeId is:', placeId);
+        displayReviewMessage('Review submitted successfully! Redirecting...', 'success');
         if (form) form.reset();
+        console.log('about to setTimeout redirect');
+        setTimeout(() => {
+            console.log('setTimeout fired, redirecting now to', `place.html?id=${placeId}`);
+            window.location.href = `place.html?id=${placeId}`;
+        }, 1200);
     } else {
-        
+        // Your reviews.py already returns useful messages via `error`
+        // (e.g. "You have already reviewed this place",
+        // "You cannot review your own place") — surface those directly
+        // instead of a generic failure message.
         let message = 'Failed to submit review, please try again';
         try {
             const data = await response.json();
@@ -370,8 +482,27 @@ async function handleReviewResponse(response) {
                 message = data.message;
             }
         } catch (e) {
-            // if response body wasn't JSON — keep the default message
+            // response body wasn't JSON — keep the default message
         }
-        alert(message);
+        displayReviewMessage(message, 'error');
     }
+}
+
+function displayReviewMessage(message, type) {
+    let messageEl = document.getElementById('review-message');
+    if (!messageEl) {
+        messageEl = document.createElement('p');
+        messageEl.id = 'review-message';
+        messageEl.style.marginTop = '10px';
+        messageEl.style.textAlign = 'center';
+        const submitBtn = document.querySelector('#review-form .submit-button');
+        if (submitBtn) {
+            submitBtn.insertAdjacentElement('afterend', messageEl);
+        } else {
+            const reviewForm = document.getElementById('review-form');
+            if (reviewForm) reviewForm.appendChild(messageEl);
+        }
+    }
+    messageEl.style.color = type === 'success' ? 'green' : 'red';
+    messageEl.textContent = message;
 }

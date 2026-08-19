@@ -56,13 +56,13 @@ class PlaceList(Resource):
         places = facade.get_all_places()
         return [{
             'id': p.id,
-         'title': p.title,
-         'description': p.description,
-         'price': p.price,
-         'latitude': p.latitude,
-         'longitude': p.longitude,
-         'image_url': p.image_url
-    } for p in places], 200
+            'title': p.title,
+            'description': p.description,
+            'price': p.price,
+            'latitude': p.latitude,
+            'longitude': p.longitude,
+            'image_url': p.image_url
+        } for p in places], 200
 
 
 @api.route('/<place_id>')
@@ -158,6 +158,8 @@ class PlaceReviewList(Resource):
         if reviews is None:
             return {'error': 'Place not found'}, 404
 
+        # r.user — matches the User model's backref='user' on its
+        # `reviews` relationship.
         return [{
             'id': r.id,
             'text': r.text,
