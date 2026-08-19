@@ -186,9 +186,7 @@ async function fetchPlaceDetails(token, placeId) {
         const headers = { 'Content-Type': 'application/json' };
         if (token) headers['Authorization'] = `Bearer ${token}`;
 
-        // Place details and its reviews come from two separate existing
-        // endpoints — GET /places/<id> doesn't include reviews, so we fetch
-        // GET /places/<id>/reviews alongside it and merge them client-side.
+        
         const [placeResponse, reviewsResponse] = await Promise.all([
             fetch(`${API_URL}/places/${placeId}`, { method: 'GET', headers }),
             fetch(`${API_URL}/places/${placeId}/reviews`, { method: 'GET', headers: { 'Content-Type': 'application/json' } })
@@ -247,12 +245,7 @@ function displayPlaceDetails(place, reviews, token) {
         amenitiesLabel.textContent = 'Amenities:';
         amenitiesWrap.appendChild(amenitiesLabel);
 
-        // FIX: this used to be `document.className = 'amenities-list'`, which
-        // set a className on `document` and stored the resulting STRING in
-        // amenitiesList (not an element). Calling .appendChild() on a string
-        // threw a TypeError every time, silently swallowed by the catch block
-        // in fetchPlaceDetails — killing description, amenities, and reviews
-        // rendering all at once, every single page load.
+        
         const amenitiesList = document.createElement('ul');
         amenitiesList.className = 'amenities-list';
         (place.amenities || []).forEach((amenity) => {
@@ -297,9 +290,7 @@ function displayReviews(reviews, token) {
             </div>
         `;
 
-        // Only show a Delete button on reviews the logged-in user wrote
-        // themselves. The server still enforces ownership independently
-        // on DELETE, so this is just UX — not the security boundary.
+        
         if (currentUserId && review.user_id === currentUserId) {
             const deleteBtn = document.createElement('button');
             deleteBtn.className = 'delete-review-button';
@@ -460,19 +451,11 @@ async function submitReview(token, placeId, reviewText, rating) {
 async function handleReviewResponse(response, placeId) {
     const form = document.getElementById('review-form');
     if (response.ok) {
-        console.log('SUCCESS branch reached, placeId is:', placeId);
-        displayReviewMessage('Review submitted successfully! Redirecting...', 'success');
         if (form) form.reset();
-        console.log('about to setTimeout redirect');
-        setTimeout(() => {
-            console.log('setTimeout fired, redirecting now to', `place.html?id=${placeId}`);
-            window.location.href = `place.html?id=${placeId}`;
-        }, 1200);
+        
+        sessionStorage.setItem('reviewSubmittedMessage', 'Review submitted successfully!');
+        window.location.href = `place.html?id=${placeId}`;
     } else {
-        // Your reviews.py already returns useful messages via `error`
-        // (e.g. "You have already reviewed this place",
-        // "You cannot review your own place") — surface those directly
-        // instead of a generic failure message.
         let message = 'Failed to submit review, please try again';
         try {
             const data = await response.json();
@@ -487,7 +470,6 @@ async function handleReviewResponse(response, placeId) {
         displayReviewMessage(message, 'error');
     }
 }
-
 function displayReviewMessage(message, type) {
     let messageEl = document.getElementById('review-message');
     if (!messageEl) {
