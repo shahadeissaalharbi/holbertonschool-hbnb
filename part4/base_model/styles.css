@@ -94,6 +94,7 @@ header nav {
   color: #fff;
   text-decoration: none;
   font-weight: 500;
+  margin-right: 0.5rem;
 }
 
 .nav-link:hover {
@@ -410,7 +411,15 @@ footer {
   #login-form {
     padding: 1.5rem;
   }
+    .hero {
+    padding: 2.5rem 1.25rem;
+  }
+
+  .hero h1 {
+    font-size: 1.8rem;
+  }
 }
+
 
 /* ---------------------------------
    place card - index.html
@@ -546,4 +555,198 @@ footer {
 
 .place-gallery::-webkit-scrollbar-track {
     background: transparent;
+}
+/* ---------------------------------
+   Home page - Hero
+   --------------------------------- */
+
+.hero {
+  background-color: #e67600;
+  background-image: linear-gradient(135deg, #ff8c00, #e67600);
+  color: #fff;
+  border-radius: var(--radius-card);
+  padding: 4rem 2rem;
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.hero-content {
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.hero h1 {
+  color: #fff;
+  font-size: 2.4rem;
+  margin-bottom: 1rem;
+}
+
+.hero-subtitle {
+  font-size: 1.1rem;
+  opacity: 0.95;
+  margin-bottom: 2rem;
+}
+
+.hero-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.cta-button {
+  display: inline-block;
+  padding: 0.75rem 1.6rem;
+  border-radius: 6px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: transform 0.15s ease, background-color 0.2s ease;
+}
+
+.cta-button:hover {
+  transform: translateY(-2px);
+}
+
+.cta-primary {
+  background-color: #fff;
+  color: var(--color-primary-dark);
+}
+
+.cta-primary:hover {
+  background-color: #f1f1f1;
+}
+
+.cta-secondary {
+  background-color: transparent;
+  color: #fff;
+  border: 2px solid #fff;
+}
+
+.cta-secondary:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+/* ---------------------------------
+   Home page - Features
+   --------------------------------- */
+
+.features {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.features h2,
+.steps h2 {
+  margin-bottom: 2rem;
+}
+
+.features-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+}
+
+.feature-card {
+  background-color: var(--color-card-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  margin: 20px;
+  padding: 10px;
+  width: 260px;
+  text-align: center;
+  box-shadow: var(--shadow-card);
+}
+
+.feature-icon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.feature-card h3 {
+  margin-bottom: 0.5rem;
+}
+
+.feature-card p {
+  color: var(--color-text-light);
+  font-size: 0.95rem;
+}
+
+/* ---------------------------------
+   Home page - Steps
+   --------------------------------- */
+
+.steps {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.steps-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+}
+
+.step-card {
+  width: 220px;
+  padding: 1rem;
+}
+
+.step-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--color-primary);
+  color: #fff;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+}
+
+.step-card h3 {
+  margin-bottom: 0.4rem;
+}
+
+.step-card p {
+  color: var(--color-text-light);
+  font-size: 0.95rem;
+}
+
+/* ---------------------------------
+   Home page - CTA banner
+   --------------------------------- */
+
+.cta-banner {
+  text-align: center;
+  background-color: var(--color-card-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  padding: 2.5rem 1.5rem;
+}
+
+.cta-banner h2 {
+  margin-bottom: 1.2rem;
+}
+
+/* ---------------------------------
+   Register page
+   --------------------------------- */
+
+.form-footer-note {
+  text-align: center;
+  margin-top: 1rem;
+  color: var(--color-text-light);
+}
+
+.form-footer-note a {
+  color: var(--color-primary-dark);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.form-footer-note a:hover {
+  text-decoration: underline;
 }
