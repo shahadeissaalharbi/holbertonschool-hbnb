@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Review - HBnB</title>
     <link rel="icon" type="image/png" href="images/icon.png">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/forms_styles.css">
+    <link rel="stylesheet" href="css/add_review_styles.css">
 </head>
 <body>
     <header>
@@ -33,14 +35,14 @@
 
                 <div class="form-group">
                     <label for="rating">Rating</label>
-                    <select id="rating" name="rating" required>
-                        <option value="" selected disabled>Choose a rating</option>
-                        <option value="1">1 Star</option>
-                        <option value="2">2 Stars</option>
-                        <option value="3">3 Stars</option>
-                        <option value="4">4 Stars</option>
-                        <option value="5">5 Stars</option>
-                    </select>
+                    <div class="star-rating" role="radiogroup" aria-label="Star rating">
+                        <button type="button" class="star" data-value="1" aria-label="1 star" aria-pressed="false">★</button>
+                        <button type="button" class="star" data-value="2" aria-label="2 stars" aria-pressed="false">★</button>
+                        <button type="button" class="star" data-value="3" aria-label="3 stars" aria-pressed="false">★</button>
+                        <button type="button" class="star" data-value="4" aria-label="4 stars" aria-pressed="false">★</button>
+                        <button type="button" class="star" data-value="5" aria-label="5 stars" aria-pressed="false">★</button>
+                    </div>
+                    <input type="hidden" id="rating" name="rating">
                 </div>
 
                 <button type="submit" class="submit-button">Submit Review</button>
@@ -52,6 +54,7 @@
         <p>&copy; 2026 HBnB Evolution. All rights reserved.</p>
     </footer>
 
-    <script src="scripts.js"></script>
+    <script src="js/script.js"></script>
+    <script src="js/add_review_script.js"></script>
 </body>
 </html>

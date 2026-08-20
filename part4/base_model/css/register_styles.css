@@ -1,0 +1,19 @@
+/* ==========================================================================
+   HBnB - Register page (register.html)
+   ========================================================================== */
+
+.form-footer-note {
+  text-align: center;
+  margin-top: 1rem;
+  color: var(--color-text);
+}
+
+.form-footer-note a {
+  color: var(--color-primary-dark);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.form-footer-note a:hover {
+  text-decoration: underline;
+}
