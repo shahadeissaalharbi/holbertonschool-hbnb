@@ -1,6 +1,9 @@
-<<<<<<< Updated upstream
 /* ==========================================================================
    HBnB - Place details page (place.html)
+   ========================================================================== */
+
+/* ==========================================================================
+   Place Details
    ========================================================================== */
 
 .place-details {
@@ -28,6 +31,10 @@
   font-weight: 600;
 }
 
+/* ==========================================================================
+   Amenities
+   ========================================================================== */
+
 .amenities-list {
   list-style: none;
   display: flex;
@@ -52,9 +59,9 @@
   height: 18px;
 }
 
-/* ---------------------------------
-   Interior photo gallery
-   --------------------------------- */
+/* ==========================================================================
+   Interior Photo Gallery
+   ========================================================================== */
 
 .place-gallery {
   display: flex;
@@ -63,7 +70,6 @@
   overflow-y: hidden;
   padding: 10px 0 16px;
   margin-bottom: 16px;
-
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
 }
@@ -75,7 +81,6 @@
   object-fit: cover;
   border-radius: 10px;
   border: 1px solid #ddd;
-
   scroll-snap-align: start;
 }
 
@@ -92,9 +97,9 @@
   background: transparent;
 }
 
-/* ---------------------------------
+/* ==========================================================================
    Reviews
-   --------------------------------- */
+   ========================================================================== */
 
 #reviews h2 {
   margin-top: 1rem;
@@ -133,6 +138,10 @@
   padding: 0.5rem 0;
 }
 
+/* ==========================================================================
+   Delete Review Button
+   ========================================================================== */
+
 .delete-review-button {
   position: absolute;
   top: 14px;
@@ -160,9 +169,10 @@
 .delete-review-button:hover .trash-icon {
   opacity: 1;
 }
-/* ---------------------------------
-   Add Review Section (Clean Minimal Centered)
-   --------------------------------- */
+
+/* ==========================================================================
+   Add Review Section
+   ========================================================================== */
 
 #add-review {
   margin: 2.5rem 0 1.5rem 0 !important;
@@ -170,16 +180,19 @@
   background: transparent !important;
   border: none !important;
   box-shadow: none !important;
+
   display: flex !important;
   flex-direction: column !important;
   align-items: center !important;
   justify-content: center !important;
+
   text-align: center !important;
   gap: 0.75rem !important;
 }
 
+/* Hide duplicate heading */
 #add-review h2 {
-  display: none !important; /* إخفاء العنوان المتكرر */
+  display: none !important;
 }
 
 #add-review p,
@@ -195,13 +208,20 @@
 #add-review-link {
   display: inline-block !important;
   padding: 0.75rem 2rem !important;
+
   background-color: var(--color-primary, #FF788D) !important;
   color: #ffffff !important;
+
   text-decoration: none !important;
   font-size: 0.95rem !important;
   font-weight: 600 !important;
+
   border-radius: var(--radius-button, 8px) !important;
-  transition: background-color 0.2s ease, transform 0.1s ease !important;
+
+  transition:
+    background-color 0.2s ease,
+    transform 0.1s ease !important;
+
   box-shadow: 0 3px 8px rgba(255, 120, 141, 0.25) !important;
 }
 
@@ -210,166 +230,45 @@
 #add-review-link:hover {
   background-color: var(--color-primary-dark, #DE677A) !important;
   transform: translateY(-2px) !important;
-=======
+}
+
 /* ==========================================================================
-   HBnB - Place details page (place.html)
+   Responsive
    ========================================================================== */
 
-.place-details {
-  background-color: var(--color-card-bg);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-card);
-  margin: 20px 0;
-  padding: 10px;
-}
+@media (max-width: 600px) {
+  .place-details {
+    margin: 15px 0;
+  }
 
-.place-info {
-  padding: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
+  .place-info {
+    padding: 1rem;
+  }
 
-.place-info p {
-  font-size: 1.05rem;
-}
+  .place-info p {
+    font-size: 1rem;
+  }
 
-.place-info .host-name,
-.place-info .place-price-value {
-  color: var(--color-primary-dark);
-  font-weight: 600;
-}
+  .place-gallery {
+    gap: 10px;
+  }
 
-.amenities-list {
-  list-style: none;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.6rem;
-  padding: 0;
-}
+  .place-gallery .gallery-image {
+    width: 240px;
+    height: 165px;
+  }
 
-.amenities-list li {
-  background-color: var(--color-bg);
-  border: 1px solid var(--color-border);
-  border-radius: 20px;
-  padding: 0.3rem 0.9rem;
-  font-size: 0.9rem;
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-}
+  .review-card {
+    margin: 15px 0;
+  }
 
-.amenities-list img {
-  width: 18px;
-  height: 18px;
-}
+  #add-review {
+    margin: 2rem 0 1rem 0 !important;
+  }
 
-/* ---------------------------------
-   Interior photo gallery
-   --------------------------------- */
-
-.place-gallery {
-  display: flex;
-  gap: 12px;
-  overflow-x: auto;
-  overflow-y: hidden;
-  padding: 10px 0 16px;
-  margin-bottom: 16px;
-
-  scroll-snap-type: x mandatory;
-  -webkit-overflow-scrolling: touch;
-}
-
-.place-gallery .gallery-image {
-  flex: 0 0 auto;
-  width: 280px;
-  height: 190px;
-  object-fit: cover;
-  border-radius: 10px;
-  border: 1px solid #ddd;
-
-  scroll-snap-align: start;
-}
-
-.place-gallery::-webkit-scrollbar {
-  height: 8px;
-}
-
-.place-gallery::-webkit-scrollbar-thumb {
-  background: #ccc;
-  border-radius: 10px;
-}
-
-.place-gallery::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-/* ---------------------------------
-   Reviews
-   --------------------------------- */
-
-#reviews h2 {
-  margin-top: 1rem;
-}
-
-.review-card {
-  background-color: var(--color-card-bg);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-card);
-  margin: 20px 0;
-  padding: 10px;
-  position: relative;
-}
-
-.review-card .review-body {
-  padding: 0.75rem 1rem;
-}
-
-.review-user {
-  font-weight: 700;
-  margin-bottom: 0.3rem;
-}
-
-.review-comment {
-  margin-bottom: 0.4rem;
-}
-
-.review-rating {
-  color: var(--color-primary-dark);
-  letter-spacing: 2px;
-}
-
-.no-reviews {
-  color: var(--color-text-light);
-  font-style: italic;
-  padding: 0.5rem 0;
-}
-
-.delete-review-button {
-  position: absolute;
-  top: 14px;
-  right: 14px;
-  background: none;
-  border: none;
-  padding: 6px;
-  border-radius: 6px;
-  cursor: pointer;
-  line-height: 0;
-  transition: background-color 0.2s ease;
-}
-
-.delete-review-button:hover {
-  background-color: var(--color-bg);
-}
-
-.trash-icon {
-  width: 18px;
-  height: 18px;
-  opacity: 0.55;
-  transition: opacity 0.2s ease;
-}
-
-.delete-review-button:hover .trash-icon {
-  opacity: 1;
->>>>>>> Stashed changes
+  #add-review .add-review-button,
+  #add-review a,
+  #add-review-link {
+    padding: 0.7rem 1.5rem !important;
+  }
 }
