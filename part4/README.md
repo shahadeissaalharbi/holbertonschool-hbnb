@@ -123,6 +123,12 @@ The form (first name, last name, email, password, confirm password) is fully bui
 python run.py
 # → serves http://127.0.0.1:5000/api/v1
 
+# 2. Serve the client (from inside base_model/)
+cd base_model
+python3 -m http.server 8000
+# → open http://localhost:8000/home.html
+
+
 ```
 
 The API base URL is hardcoded in `js/script.js`:
