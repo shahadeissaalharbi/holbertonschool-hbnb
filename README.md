@@ -839,6 +839,6 @@ Log in with the seeded admin account (`admin@hbnb.io` / `admin1234`) or register
 
 - Lama Almazroa — [@l44mz](https://github.com/l44mz)
 - Noura Alotibi — [@nnnsss12](https://github.com/nnnsss12)
-- Shahad Alharbi — [@shahadeissaalharbi](https://github.com/shahadeissaalharbi)
+- SHAHAD ALHARBI — [@shahadeissaalharbi](https://github.com/shahadeissaalharbi)
 
 *Built as part of Holberton Academy.*
