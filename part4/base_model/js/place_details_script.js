@@ -1,7 +1,6 @@
 /* ==========================================================================
    HBnB - Place details page (place.html)
    ========================================================================== */
-
 document.addEventListener('DOMContentLoaded', () => {
     console.log('Place page loaded');
     console.log('Current URL:', window.location.href);
@@ -65,6 +64,29 @@ function checkPlaceAuthentication(placeId) {
     }
 
     fetchPlaceDetails(token, placeId);
+}
+
+
+/* ==========================================================================
+   Fetch User Data
+   ========================================================================== */
+
+async function fetchUserData(userId, token) {
+    try {
+        const response = await fetch(`${API_URL}/users/${userId}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        if (response.ok) {
+            return await response.json();
+        }
+    } catch (e) {
+        console.error('Error fetching user data:', e);
+    }
+    return null;
 }
 
 
@@ -285,7 +307,7 @@ function displayPlaceDetails(place, reviews, token) {
    Display Reviews
    ========================================================================== */
 
-function displayReviews(reviews, token) {
+async function displayReviews(reviews, token) {
     const reviewsList = document.getElementById('reviews-list');
 
     if (!reviewsList) {
@@ -309,20 +331,33 @@ function displayReviews(reviews, token) {
         ? getUserIdFromToken(token)
         : null;
 
-    reviews.forEach((review) => {
+    for (const review of reviews) {
         const card = document.createElement('article');
 
         card.className = 'review-card';
 
-        /*
-         * Some API responses may include review.user while others
-         * may only provide user_id.
-         */
+        let userName = '';
 
-        const reviewerName =
-            review.user && review.user.first_name
-                ? review.user.first_name
-                : 'Anonymous';
+        if (review.user) {
+            const firstName = review.user.first_name || review.user.firstName || '';
+            const lastName = review.user.last_name || review.user.lastName || '';
+            userName = `${firstName} ${lastName}`.trim() || review.user.name || review.user.email;
+        } else if (review.user_name) {
+            userName = review.user_name;
+        } else if (review.first_name) {
+            userName = `${review.first_name} ${review.last_name || ''}`.trim();
+        }
+
+        if ((!userName || userName === 'User') && review.user_id) {
+            const fetchedUser = await fetchUserData(review.user_id, token);
+            if (fetchedUser) {
+                const firstName = fetchedUser.first_name || fetchedUser.firstName || '';
+                const lastName = fetchedUser.last_name || fetchedUser.lastName || '';
+                userName = `${firstName} ${lastName}`.trim() || fetchedUser.email;
+            }
+        }
+
+        const reviewerName = userName || 'Anonymous';
 
         const rating = Number(review.rating) || 0;
 
@@ -390,7 +425,7 @@ function displayReviews(reviews, token) {
         }
 
         reviewsList.appendChild(card);
-    });
+    }
 }
 
 
