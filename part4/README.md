@@ -123,9 +123,6 @@ The form (first name, last name, email, password, confirm password) is fully bui
 python run.py
 # → serves http://127.0.0.1:5000/api/v1
 
-# 2. Serve the client (from inside base_model/)
-python3 -m http.server 8000
-# → open http://localhost:8000/home.html
 ```
 
 The API base URL is hardcoded in `js/script.js`:
@@ -147,10 +144,6 @@ Update this constant if the API runs on a different host or port. Opening the HT
 | `POST` | `/api/v1/reviews/` | Yes | `add_review_script.js` |
 | `DELETE` | `/api/v1/reviews/<review_id>` | Yes (author) | `place_details_script.js` |
 
-## Known Issues / Not Yet Complete
-
-- **Registration is not connected to the API.** `register_script.js` only logs a warning on submit; no `fetch()` call is made.
-- **Reviewer display name depends on API response shape.** `displayReviews()` reads `review.user.first_name`; if `GET /places/<id>/reviews` returns only a flat `user_id` (no nested `user` object), the UI falls back to "Anonymous".
 
 ## Tech Notes
 
