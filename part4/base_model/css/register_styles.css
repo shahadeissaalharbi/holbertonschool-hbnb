@@ -1,19 +1,27 @@
-/* ==========================================================================
-   HBnB - Register page (register.html)
-   ========================================================================== */
-
-.form-footer-note {
-  text-align: center;
-  margin-top: 1rem;
-  color: var(--color-text);
+.register-message {
+    text-align: center;
+    font-weight: 600;
+    margin-top: 0.75rem;
+    min-height: 1.2rem;
 }
 
-.form-footer-note a {
-  color: var(--color-primary-dark);
-  font-weight: 600;
-  text-decoration: none;
+.register-message.success {
+    color: #1a7f37;
 }
 
-.form-footer-note a:hover {
-  text-decoration: underline;
+.register-message.error {
+    color: #d1242f;
+}
+.register-message {
+    text-align: center;
+    font-weight: 600;
+    margin-top: 0.75rem;
+}
+
+.register-message.success {
+    color: #1a7f37;
+}
+
+.register-message.error {
+    color: #d1242f;
 }
