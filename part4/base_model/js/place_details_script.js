@@ -56,7 +56,6 @@ function displayPlaceDetails(place, reviews, token) {
     if (placeInfo) {
         placeInfo.innerHTML = '';
 
-        // Image gallery
         if (place.images && place.images.length > 0) {
             const gallery = document.createElement('div');
             gallery.className = 'place-gallery';
@@ -91,7 +90,33 @@ function displayPlaceDetails(place, reviews, token) {
         amenitiesList.className = 'amenities-list';
         (place.amenities || []).forEach((amenity) => {
             const li = document.createElement('li');
-            li.textContent = amenity.name;
+            const img = document.createElement('img');
+            
+            const rawName = (typeof amenity === 'string' ? amenity : amenity.name) || '';
+            const cleanName = rawName.toLowerCase().trim();
+
+            if (cleanName.includes('air conditioning') || cleanName.includes('ac')) {
+                img.src = 'images/icon_bed.png';
+            } else if (cleanName.includes('swimming pool') || cleanName.includes('pool')) {
+                img.src = 'images/icon_bath.png';
+            } else if (amenity.icon) {
+                img.src = amenity.icon;
+            } else {
+                const formattedName = cleanName.replace(/\s+/g, '_');
+                img.src = `images/icon_${formattedName}.png`;
+            }
+
+            img.alt = rawName;
+
+            img.onerror = () => { 
+                img.src = 'images/icon_bath.png'; 
+            };
+
+            const span = document.createElement('span');
+            span.textContent = rawName;
+
+            li.appendChild(img);
+            li.appendChild(span);
             amenitiesList.appendChild(li);
         });
         amenitiesWrap.appendChild(amenitiesList);
@@ -120,9 +145,6 @@ function displayReviews(reviews, token) {
         const card = document.createElement('article');
         card.className = 'review-card';
 
-        // The reviews-list endpoint only returns id/text/rating/user_id
-        // right now, so there's no reviewer name to show without a
-        // further backend change.
         card.innerHTML = `
             <div class="review-body">
                 <p class="review-user">${review.user && review.user.first_name ? review.user.first_name : 'Anonymous'}</p>
@@ -172,7 +194,6 @@ async function deleteReview(reviewId, token, cardElement) {
                     message = data.message;
                 }
             } catch (e) {
-                // response body wasn't JSON — keep the default message
             }
             alert(message);
         }

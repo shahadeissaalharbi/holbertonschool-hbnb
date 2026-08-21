@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 50" width="220" height="50">
+  <!-- Icon: Vibe Loop / Pin -->
+  <g transform="translate(5, 5)">
+    <!-- Outer Outline -->
+    <path d="M 20 4 C 11 4, 4 11, 4 20 C 4 29, 14 36, 20 42 C 26 36, 36 29, 36 20 C 36 11, 29 4, 20 4 Z" 
+          fill="#ffffff" 
+          stroke="#222222" 
+          stroke-width="3.5" 
+          stroke-linejoin="round"/>
+    
+    <!-- Inner Vibe Heart/Wave (Pink Accent) -->
+    <path d="M 13 16 C 13 13, 16 12, 18 15 L 20 18 L 22 15 C 24 12, 27 13, 27 16 C 27 20, 20 25, 20 25 C 20 25, 13 20, 13 16 Z" 
+          fill="#FF788D" 
+          stroke="#FF788D" 
+          stroke-width="1.5" 
+          stroke-linecap="round" 
+          stroke-linejoin="round"/>
+  </g>
+
+  <!-- Typography: vibe -->
+  <text x="52" y="33" 
+        font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" 
+        font-size="30" 
+        font-weight="800" 
+        fill="#222222" 
+        letter-spacing="-1">vibe</text>
+</svg>

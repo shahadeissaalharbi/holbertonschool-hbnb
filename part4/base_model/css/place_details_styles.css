@@ -159,3 +159,54 @@
 .delete-review-button:hover .trash-icon {
   opacity: 1;
 }
+/* ---------------------------------
+   Add Review Section (Clean Minimal Centered)
+   --------------------------------- */
+
+#add-review {
+  margin: 2.5rem 0 1.5rem 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  gap: 0.75rem !important;
+}
+
+#add-review h2 {
+  display: none !important; /* إخفاء العنوان المتكرر */
+}
+
+#add-review p,
+#add-review .reviewing-target {
+  margin: 0 !important;
+  color: #555555 !important;
+  font-size: 0.95rem !important;
+  font-weight: 500 !important;
+}
+
+#add-review .add-review-button,
+#add-review a,
+#add-review-link {
+  display: inline-block !important;
+  padding: 0.75rem 2rem !important;
+  background-color: var(--color-primary, #FF788D) !important;
+  color: #ffffff !important;
+  text-decoration: none !important;
+  font-size: 0.95rem !important;
+  font-weight: 600 !important;
+  border-radius: var(--radius-button, 8px) !important;
+  transition: background-color 0.2s ease, transform 0.1s ease !important;
+  box-shadow: 0 3px 8px rgba(255, 120, 141, 0.25) !important;
+}
+
+#add-review .add-review-button:hover,
+#add-review a:hover,
+#add-review-link:hover {
+  background-color: var(--color-primary-dark, #DE677A) !important;
+  transform: translateY(-2px) !important;
+}

@@ -18,4 +18,29 @@ document.addEventListener('DOMContentLoaded', () => {
     if (loginLink) {
         loginLink.style.display = token ? 'none' : 'block';
     }
+     applyAdminOnlyVisibility();
 });
+
+/**
+ * Shows any element with the "admin-only-link" class
+ * only when the logged-in user's token has is_admin = true.
+ */
+function applyAdminOnlyVisibility() {
+    const token = getCookie('token');
+    const adminLinks = document.querySelectorAll('.admin-only-link');
+
+    let userIsAdmin = false;
+    if (token) {
+        try {
+            const base64Payload = token.split('.')[1];
+            const decoded = JSON.parse(atob(base64Payload.replace(/-/g, '+').replace(/_/g, '/')));
+            userIsAdmin = decoded.is_admin === true;
+        } catch (error) {
+            userIsAdmin = false;
+        }
+    }
+
+    adminLinks.forEach((link) => {
+        link.style.display = userIsAdmin ? 'inline-block' : 'none';
+    });
+}
