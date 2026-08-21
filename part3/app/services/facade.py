@@ -93,6 +93,8 @@ class HBnBFacade:
             'price': place_data.get('price'),
             'latitude': place_data.get('latitude'),
             'longitude': place_data.get('longitude'),
+            'image_url': place_data.get('image_url'),
+            'images': place_data.get('images'),
             'user_id': owner_id,
         }
 

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Place - HBnB</title>
+    <link rel="icon" type="image/png" href="images/icon.png">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/forms_styles.css">
+    <link rel="stylesheet" href="css/admin_nav_styles.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="index.html" class="logo-link">
+                <img src="images/logo.png" alt="HBnB logo" class="logo">
+            </a>
+        </nav>
+        <nav>
+            <a href="home.html" class="nav-link">Home</a>
+            <a href="index.html" class="nav-link">Places</a>
+            <a href="login.html" id="login-link" class="login-button">Login</a>
+            <a href="#" id="logout-link" class="login-button" style="display:none;">Logout</a>
+        </nav>
+    </header>
+
+    <main>
+        <h1>List a new place</h1>
+        <p class="form-intro", style="text-align:center;", style="line-height: 40px;">You'll be listed as the owner of this place.</p>
+
+        <p id="access-message" style="display:none; text-align:center; color:#d1242f; font-weight:600; margin-bottom:1rem;"></p>
+
+        <form id="add-place-form" class="form">
+            <div class="form-group">
+                <label for="place-title">Title</label>
+                <input type="text" id="place-title" name="title" placeholder="Cozy Cabin" required>
+            </div>
+
+            <div class="form-group">
+                <label for="place-description">Description</label>
+                <textarea id="place-description" name="description" rows="4" placeholder="Tell guests what makes this place great"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="place-price">Price per night ($)</label>
+                <input type="number" id="place-price" name="price" min="0" step="0.01" placeholder="100.00" required>
+            </div>
+
+            <div class="form-group">
+                <label for="place-latitude">Latitude</label>
+                <input type="number" id="place-latitude" name="latitude" step="any" placeholder="45.5017" required>
+            </div>
+
+            <div class="form-group">
+                <label for="place-longitude">Longitude</label>
+                <input type="number" id="place-longitude" name="longitude" step="any" placeholder="-73.5673" required>
+            </div>
+
+            <div class="form-group">
+                <label for="place-image-url">Main Photo URL</label>
+                <input type="url" id="place-image-url" name="image_url" placeholder="https://example.com/photo.jpg" required>
+            </div>
+
+            <div class="form-group">
+                <label for="place-images">Additional Photo URLs</label>
+                <textarea id="place-images" name="images" rows="3" placeholder="One link per line"></textarea>
+            </div>
+
+            <div class="form-group" id="amenities-group" style="display:none;">
+                <label>Amenities</label>
+                <div id="amenities-list"></div>
+            </div>
+
+            <button type="submit" class="submit-button">Add Place</button>
+        </form>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 HBnB Evolution. All rights reserved.</p>
+    </footer>
+
+    <script src="js/script.js"></script>
+    <script src="js/add_place_script.js"></script>
+</body>
+</html>

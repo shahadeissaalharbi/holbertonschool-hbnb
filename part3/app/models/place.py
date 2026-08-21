@@ -30,8 +30,10 @@ class Place(BaseModel):
     amenities = relationship('Amenity', secondary=PlaceAmenity.__table__,
                           lazy='subquery',
                           backref=db.backref('places', lazy=True))
+    
+    
     def __init__(self, title, description, price, latitude, longitude,
-                 user_id):
+             user_id, image_url, images=None):
         """Initialize a new Place instance"""
         super().__init__()
         self.title = title
@@ -40,6 +42,8 @@ class Place(BaseModel):
         self.latitude = latitude
         self.longitude = longitude
         self.user_id = user_id
+        self.image_url = image_url
+        self.images = images
 
     def add_review(self, review):
         """Add a review to the place"""

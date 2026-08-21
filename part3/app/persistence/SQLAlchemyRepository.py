@@ -1,5 +1,5 @@
 from app.persistence.repository import Repository
-from app import db  # Assuming you have set up SQLAlchemy in your Flask app
+from app import db  
 from app.models.place_amenity import PlaceAmenity
 from app.models.place import Place
 from app.models.review import Review

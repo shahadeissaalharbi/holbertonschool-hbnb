@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -68,4 +69,78 @@
     <script src="js/script.js"></script>
     <script src="js/register_script.js"></script>
 </body>
+=======
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add User - HBnB</title>
+    <link rel="icon" type="image/png" href="images/icon.png">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/forms_styles.css">
+    <link rel="stylesheet" href="css/register_styles.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="home.html" class="logo-link">
+                <img src="images/logo.png" alt="HBnB logo" class="logo">
+            </a>
+        </nav>
+        <nav>
+            <a href="index.html" class="nav-link">Places</a>
+            <a href="login.html" id="login-link" class="login-button">Login</a>
+            <a href="#" id="logout-link" class="login-button" style="display:none;">Logout</a>
+        </nav>
+    </header>
+
+    <main>
+        <h1>Add a new user</h1>
+        <p class="form-intro">This page is only available to administrators.</p>
+
+        <p id="access-message" style="display:none; text-align:center; color:#d1242f; font-weight:600; margin-bottom:1rem;"></p>
+
+        <form id="register-form" class="form">
+            <div class="form-group">
+                <label for="first-name">First Name</label>
+                <input type="text" id="first-name" name="first_name" placeholder="John" required>
+            </div>
+
+            <div class="form-group">
+                <label for="last-name">Last Name</label>
+                <input type="text" id="last-name" name="last_name" placeholder="Doe" required>
+            </div>
+
+            <div class="form-group">
+                <label for="reg-email">Email</label>
+                <input type="email" id="reg-email" name="email" placeholder="you@example.com" required>
+            </div>
+
+            <div class="form-group">
+                <label for="reg-password">Temporary Password</label>
+                <input type="password" id="reg-password" name="password" placeholder="Set a password" required minlength="8">
+            </div>
+
+            <div class="form-group">
+                <label for="confirm-password">Confirm Password</label>
+                <input type="password" id="confirm-password" name="confirm_password" placeholder="Re-enter the password" required minlength="8">
+            </div>
+
+            <button type="submit" class="submit-button">Add User</button>
+        </form>
+
+        <p class="form-footer-note">
+            <a href="index.html">Back to Places</a>
+        </p>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 HBnB Evolution. All rights reserved.</p>
+    </footer>
+
+    <script src="js/script.js"></script>
+    <script src="js/register_script.js"></script>
+</body>
+>>>>>>> Stashed changes
 </html>

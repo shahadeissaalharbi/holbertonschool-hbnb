@@ -24,7 +24,7 @@ async function loginUser(email, password) {
         if (response.ok) {
             const data = await response.json();
             document.cookie = `token=${data.access_token}; path=/; max-age=86400`;
-            window.location.href = 'index.html';
+            window.location.href = 'home.html';
         } else {
             const errorData = await response.json().catch(() => ({}));
             displayLoginError(errorData.message || 'Invalid email or password');

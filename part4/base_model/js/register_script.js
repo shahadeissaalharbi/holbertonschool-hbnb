@@ -30,11 +30,7 @@ function checkAdminAccessAndSetupForm() {
     setupRegisterForm(token);
 }
 
-/**
- * Decodes the JWT payload client-side to read the is_admin claim.
- * This is only used for UI gating; the server independently
- * enforces the same rule on every request.
- */
+
 function isAdminUser(token) {
     try {
         const base64Payload = token.split('.')[1];
@@ -91,7 +87,7 @@ async function submitNewUser(token, userData) {
             document.getElementById('register-form').reset();
 
             setTimeout(() => {
-                window.location.href = 'login.html';
+                window.location.href = 'home.html';
             }, 1500);
         } else if (response.status === 401) {
             displayRegisterMessage('Your session has expired. Redirecting to login...', 'error');

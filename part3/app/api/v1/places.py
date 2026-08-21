@@ -10,7 +10,9 @@ place_model = api.model('Place', {
     'price': fields.Float(required=True, description='Price per night'),
     'latitude': fields.Float(required=True, description='Latitude coordinate'),
     'longitude': fields.Float(required=True, description='Longitude coordinate'),
-    'amenities': fields.List(fields.String, description='List of amenity IDs')
+    'amenities': fields.List(fields.String, description='List of amenity IDs'),
+    'image_url': fields.String(required=True, description='Main photo URL'),
+    'images': fields.String(description='Comma-separated additional photo URLs')
 })
 
 place_update_model = api.model('PlaceUpdate', {
@@ -19,7 +21,9 @@ place_update_model = api.model('PlaceUpdate', {
     'price': fields.Float(description='Price per night'),
     'latitude': fields.Float(description='Latitude coordinate'),
     'longitude': fields.Float(description='Longitude coordinate'),
-    'amenities': fields.List(fields.String, description='List of amenity IDs')
+    'amenities': fields.List(fields.String, description='List of amenity IDs'),
+    'image_url': fields.String(description='Main photo URL'),
+    'images': fields.String(description='Comma-separated additional photo URLs')
 })
 
 
@@ -48,7 +52,9 @@ class PlaceList(Resource):
             'latitude': new_place.latitude,
             'longitude': new_place.longitude,
             'owner_id': new_place.owner.id,
-            'amenities': [a.id for a in new_place.amenities]
+            'amenities': [a.id for a in new_place.amenities],
+            'image_url': new_place.image_url,
+            'images': new_place.images.split(',') if new_place.images else []
         }, 201
 
     @api.response(200, 'List of places retrieved successfully')

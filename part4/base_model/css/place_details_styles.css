@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 /* ==========================================================================
    HBnB - Place details page (place.html)
    ========================================================================== */
@@ -209,4 +210,166 @@
 #add-review-link:hover {
   background-color: var(--color-primary-dark, #DE677A) !important;
   transform: translateY(-2px) !important;
+=======
+/* ==========================================================================
+   HBnB - Place details page (place.html)
+   ========================================================================== */
+
+.place-details {
+  background-color: var(--color-card-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  margin: 20px 0;
+  padding: 10px;
+}
+
+.place-info {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.place-info p {
+  font-size: 1.05rem;
+}
+
+.place-info .host-name,
+.place-info .place-price-value {
+  color: var(--color-primary-dark);
+  font-weight: 600;
+}
+
+.amenities-list {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  padding: 0;
+}
+
+.amenities-list li {
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
+  padding: 0.3rem 0.9rem;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.amenities-list img {
+  width: 18px;
+  height: 18px;
+}
+
+/* ---------------------------------
+   Interior photo gallery
+   --------------------------------- */
+
+.place-gallery {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 10px 0 16px;
+  margin-bottom: 16px;
+
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+.place-gallery .gallery-image {
+  flex: 0 0 auto;
+  width: 280px;
+  height: 190px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+
+  scroll-snap-align: start;
+}
+
+.place-gallery::-webkit-scrollbar {
+  height: 8px;
+}
+
+.place-gallery::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 10px;
+}
+
+.place-gallery::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ---------------------------------
+   Reviews
+   --------------------------------- */
+
+#reviews h2 {
+  margin-top: 1rem;
+}
+
+.review-card {
+  background-color: var(--color-card-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  margin: 20px 0;
+  padding: 10px;
+  position: relative;
+}
+
+.review-card .review-body {
+  padding: 0.75rem 1rem;
+}
+
+.review-user {
+  font-weight: 700;
+  margin-bottom: 0.3rem;
+}
+
+.review-comment {
+  margin-bottom: 0.4rem;
+}
+
+.review-rating {
+  color: var(--color-primary-dark);
+  letter-spacing: 2px;
+}
+
+.no-reviews {
+  color: var(--color-text-light);
+  font-style: italic;
+  padding: 0.5rem 0;
+}
+
+.delete-review-button {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: none;
+  border: none;
+  padding: 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  line-height: 0;
+  transition: background-color 0.2s ease;
+}
+
+.delete-review-button:hover {
+  background-color: var(--color-bg);
+}
+
+.trash-icon {
+  width: 18px;
+  height: 18px;
+  opacity: 0.55;
+  transition: opacity 0.2s ease;
+}
+
+.delete-review-button:hover .trash-icon {
+  opacity: 1;
+>>>>>>> Stashed changes
 }

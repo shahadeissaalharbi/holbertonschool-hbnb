@@ -1,0 +1,49 @@
+/* Admin dropdown nav tab. Hidden by default; script.js's
+   setupAdminNav() reveals it only for authenticated admins. */
+
+#admin-tab {
+    display: none;
+    position: relative;
+}
+
+/* Overrides the shared .nav-link anchor styling so the
+   dropdown trigger reads as a nav item, not a form button. */
+#admin-tab .admin-tab-toggle {
+    background: none;
+    border: none;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    color: inherit;
+    padding: 0;
+}
+
+#admin-tab .admin-dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    min-width: 160px;
+    background: #fff;
+    border: 1px solid #e1e4e8;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 0.25rem 0;
+    z-index: 20;
+}
+
+#admin-tab.open .admin-dropdown {
+    display: block;
+}
+
+#admin-tab .admin-dropdown a {
+    display: block;
+    padding: 0.5rem 1rem;
+    text-decoration: none;
+    color: inherit;
+    white-space: nowrap;
+}
+
+#admin-tab .admin-dropdown a:hover {
+    background: #f6f8fa;
+}
