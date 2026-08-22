@@ -1,169 +1,253 @@
 # HBnB Evolution — Part 4: Simple Web Client
 
-A front-end web client for the HBnB Evolution booking platform, built with **HTML5, CSS3, and vanilla JavaScript (ES6)**. It consumes the Flask REST API developed in Part 2/Part 3 to let users browse places, view place details, log in, and submit reviews — entirely client-side, with no framework or build step.
+This is Part 4 of the HBnB Evolution project. It builds on the RESTful API and
+authentication system implemented in Part 3 by adding a **static front-end
+client** — a set of HTML, CSS, and vanilla JavaScript pages that consume the
+API and provide an interactive, browser-based experience for guests, hosts,
+and administrators.
 
-## What's in this part
+## Objective
 
-- **Places list** — fetches and renders all places from the API, with a client-side max-price filter.
-- **Place details** — fetches a single place plus its reviews, renders an image gallery, host/price/description/amenities, and the review list.
-- **Authentication** — JWT-based login; the token is stored in a cookie and read on every page to toggle auth-dependent UI (login button, add-review section, delete-review button).
-- **Review submission** — an authenticated-only form with an interactive star-rating widget, posting to the reviews endpoint.
-- **Review deletion** — review authors can delete their own reviews directly from the place details page.
-- **Account registration** — a complete registration form UI (not yet wired to the API — see [Known Issues](#known-issues--not-yet-complete)).
+Implement the **client-side interface** of the HBnB application using
+**HTML5, CSS3, and vanilla JavaScript (no frameworks)**, and connect it to
+the back-end API built in previous parts:
+
+- Design and build the core pages: landing page, places listing, place
+  details, login, add place, add review, and add user (admin).
+- Implement client-side authentication using a JWT stored in a cookie.
+- Dynamically fetch and render data from the API using the Fetch API (AJAX),
+  without reloading the page.
+- Apply role-based UI logic (e.g., showing/hiding the "Add Place", "Add
+  Review", and "Admin" links depending on login state and admin status).
+- Ensure the interface is responsive and usable across desktop and mobile
+  viewports.
+
+## Architecture Recap
+
+The client is a purely static front-end that talks to the Part 3 API over
+HTTP:
+
+```
+Browser (HTML/CSS/JS)
+        │
+        │  fetch() — JSON over HTTPS/HTTP
+        ▼
+Presentation Layer (Flask API / /api/v1/...)
+        │
+        ▼
+Business Logic Layer (Facade → User, Place, Review, Amenity)
+        │
+        ▼
+Persistence Layer (SQLite / MySQL)
+```
+
+The client never talks to the database directly — every read or write goes
+through the documented REST endpoints, with the JWT access token attached to
+protected requests via the `Authorization: Bearer <token>` header.
 
 ## Project Structure
 
 ```
-base_model/
-├── css/
-│   ├── styles.css                 # Shared styles: header, footer, buttons, CSS variables
-│   ├── home_styles.css            # Landing page (home.html)
-│   ├── places_styles.css          # Places list (index.html)
-│   ├── place_details_styles.css   # Place details page (place.html)
-│   ├── forms_styles.css           # Shared form styles (login/register/add_review)
-│   ├── add_review_styles.css      # Add-review page + star rating
-│   └── register_styles.css        # Register page
-├── images/
-│   ├── logo.png
-│   ├── icon.png
-│   ├── icon_bath.png
-│   ├── icon_bed.png
-│   ├── icon_wifi.png
-│   └── icon_trash.png
-├── js/
-│   ├── script.js                  # Shared config: API_URL, getCookie(), getPlaceIdFromURL()
-│   ├── login_script.js            # Login logic
-│   ├── register_script.js         # Register form (UI only — not yet connected to the API)
-│   ├── places_script.js           # Fetch / render / filter places
-│   ├── place_details_script.js    # Place details + reviews + delete review
-│   └── add_review_script.js       # Submit a review with interactive star rating
-├── home.html                      # Landing page
-├── index.html                     # List of available places
-├── login.html                     # Login page
-├── register.html                  # Account creation page
-├── place.html                     # Details of a specific place
-└── add_review.html                # Add a review for a place
+part4/
+└── base_model/
+    ├── css/
+    │   ├── styles.css               # Shared styles (variables, header, footer, buttons)
+    │   ├── home_styles.css          # Landing page (hero, features, steps, CTA banner)
+    │   ├── admin_nav_styles.css     # "Admin" dropdown in the navigation bar
+    │   ├── forms_styles.css         # Shared form layout (login, register, add_place, add_review)
+    │   ├── register_styles.css      # Success/error messages on the add-user form
+    │   ├── places_styles.css        # Places grid + price filter (index page)
+    │   ├── place_details_styles.css # Place details page + reviews section
+    │   └── add_review_styles.css    # Add-review page (star rating widget)
+    │
+    ├── images/                      # Icons (wifi, bed, bath, trash), logo, favicon
+    │
+    ├── js/
+    │   ├── script.js                 # Shared config/helpers: API_URL, cookies, nav/auth state, admin visibility
+    │   ├── login_script.js           # Login logic (POST /auth/login), stores JWT in a cookie
+    │   ├── register_script.js        # Add-user form (admin only), POST /users/
+    │   ├── places_script.js          # Fetches and renders all places, price filter (index page)
+    │   ├── add_place_script.js       # Add-place form (fetches amenities), POST /places/
+    │   ├── place_details_script.js   # Fetches a place + its reviews, renders gallery, deletes reviews
+    │   └── add_review_script.js      # Submits a new review (text + star rating), POST /reviews/
+    │
+    ├── home.html        # Landing page
+    ├── index.html        # List of all available places, with price filter
+    ├── place.html         # Details of a single place + its reviews
+    ├── add_place.html     # Form to create a new place (requires login)
+    ├── add_review.html    # Form to submit a review for a place (requires login)
+    ├── login.html         # Login form
+    └── register.html       # Form to add a new user (admin only)
 ```
 
-## Architecture Recap
+## Pages Overview
 
-The client is a static, multi-page site — there is no build tool, bundler, or SPA router. Each HTML page loads `js/script.js` first (shared helpers), followed by its own page-specific script:
+### `home.html` — Landing Page
+Marketing-style landing page with a hero section, a "Why book with Vibe"
+features grid, a "How it works" steps section, and a call-to-action banner
+linking into the places listing.
 
-```
-Browser (static HTML/CSS/JS)
-        │
-        ▼
-   js/script.js  →  API_URL, getCookie(), getPlaceIdFromURL()
-        │
-        ▼
-Page script (places_script.js / login_script.js / place_details_script.js / add_review_script.js)
-        │
-        ▼
-Flask REST API  (http://127.0.0.1:5000/api/v1)  ← Part 2 / Part 3
-```
+### `index.html` — Places List
+Fetches `GET /api/v1/places/` on load and renders each place as a card
+(title, price per night, and a "View Details" link). Includes a client-side
+**max-price filter** (`$10 / $50 / $100 / All`) that shows/hides cards
+without an additional network request.
 
-`script.js` centralizes the pieces every page needs (the API base URL and cookie/URL helpers) so page scripts stay focused on their own page's logic.
+### `place.html` — Place Details
+Reads the place `id` from the URL query string and fetches:
+- `GET /api/v1/places/<id>` — title, description, price, owner, amenities,
+  and photo gallery.
+- `GET /api/v1/places/<id>/reviews` — the list of reviews for that place.
 
-## Pages & Features
+Reviews are rendered with the reviewer's name, star rating, and comment.
+If the logged-in user authored a review, a delete button is shown, calling
+`DELETE /api/v1/reviews/<id>`. The "Add a Review" link/section is only shown
+to authenticated users.
 
-### 1. `home.html` — Landing Page
-A static marketing landing page: hero section, hover-reveal feature cards, a "How it works" section, and a CTA banner. Makes no API calls.
+### `add_place.html` — Add Place
+A form (title, description, price, latitude/longitude, main photo URL,
+additional photo URLs, amenities) that:
+- Loads available amenities via `GET /api/v1/amenities/` and renders them as
+  checkboxes.
+- Submits the new listing via `POST /api/v1/places/` with the JWT attached.
+- Is hidden behind an access message for unauthenticated visitors.
 
-### 2. `index.html` — Places List
-- `checkAuthentication()` reads the `token` cookie on load and shows/hides the login button accordingly.
-- `fetchPlaces()` calls `GET /places/` (adds an `Authorization` header when a token is present).
-- `displayPlaces()` renders one card per place — background image, title, price, and a "View Details" link to `place.html?id=<id>`.
-- The `#price-filter` select (10 / 50 / 100 / all) filters the rendered cards client-side via `filterPlacesByPrice()` — no additional API request.
+### `add_review.html` — Add Review
+A form with a free-text review field and an interactive **5-star rating
+widget** built with plain buttons and JavaScript (no external library).
+Submits via `POST /api/v1/reviews/` and redirects back to `place.html` on
+success.
 
-### 3. `login.html` — Login
-- `loginUser()` sends `POST /auth/login` with `email` and `password`.
-- On success: the returned `access_token` is stored in a `token` cookie (`max-age=86400`, 1 day) and the browser redirects to `index.html`.
-- On failure: `displayLoginError()` renders the API's error message (or a fallback) beneath the submit button.
+### `login.html` — Login
+Submits credentials to `POST /api/v1/auth/login`, stores the returned
+`access_token` in a `token` cookie (`max-age=86400`, 24 hours), and redirects
+to `home.html`.
 
-### 4. `register.html` — Register
-The form (first name, last name, email, password, confirm password) is fully built and validated in HTML (`required`, `minlength="8"`). `register_script.js` currently just intercepts the submit event with `console.warn('Register form submit is not implemented yet.')` — it is **not yet wired to a `POST /users/` (or `/auth/register`) call**.
+### `register.html` — Add User (Admin only)
+Only rendered for users whose JWT payload contains `is_admin: true` (decoded
+client-side); everyone else sees an explanatory access message instead of
+the form. Submits to `POST /api/v1/users/` with the admin's token attached.
 
-### 5. `place.html` — Place Details
-- `checkPlaceAuthentication()` checks the `token` cookie, toggles the "Add a Review" section, and points `#add-review-link` at `add_review.html?id=<placeId>`.
-- `fetchPlaceDetails()` fetches, in parallel:
-  - `GET /places/<id>` — title, owner, price, description, images, amenities
-  - `GET /places/<id>/reviews` — the review list
-- `displayPlaceDetails()` renders an image gallery, host name, price, description, and an amenities list.
-- `displayReviews()` renders each review (reviewer first name if present, text, star rating) and, only for the current user's own reviews, a delete button. Ownership is determined by decoding the JWT payload client-side in `getUserIdFromToken()` and comparing it to `review.user_id`.
-- `deleteReview()` sends `DELETE /reviews/<id>` after a confirmation prompt, then removes the review card from the DOM on success.
+## Client-Side Authentication
 
-### 6. `add_review.html` — Add a Review
-- Requires authentication: if no `token` cookie is present, the page redirects to `index.html` immediately.
-- Reads `placeId` from the URL (`?id=`) and fetches the place's title via `GET /places/<id>` to populate the page heading.
-- `setupStarRating()` implements a click/hover 5-star widget that writes the selected value into a hidden `#rating` input.
-- On submit, the form validates that review text and a rating are both present, then calls `POST /reviews/` with `{ text, rating, place_id }` and an `Authorization: Bearer <token>` header.
-- On success: the form resets, a success message is stashed in `sessionStorage`, and the browser redirects to `place.html?id=<placeId>`.
-- On failure: an inline error message is shown below the form.
+- On login, the JWT returned by the API is stored in a cookie:
+  `document.cookie = "token=<jwt>; path=/; max-age=86400"`.
+- `script.js` exposes `getCookie(name)` to read it back on every page.
+- The JWT payload is decoded client-side (base64) purely to read the
+  `is_admin` claim and toggle UI elements (nav links, forms). This is a
+  **UX convenience only** — the server independently re-validates the token
+  and the admin claim on every protected request; the client never trusts
+  its own decoding for authorization.
+- `refreshNavState()` runs on `DOMContentLoaded` and again on the
+  `pageshow` event (to handle the browser's back/forward cache) to keep
+  Login/Logout, Admin, and Add Place links in sync with the current
+  session.
 
-## Authentication
+## API Endpoints Used by the Client
 
-| Aspect | Implementation |
-|---|---|
-| Token storage | Browser cookie named `token` (not `localStorage`/`sessionStorage`) |
-| Token read | `getCookie('token')` in `js/script.js`, used on every page |
-| Token lifetime | Set with `max-age=86400` (1 day) at login |
-| Protected page | `add_review.html` — redirects to `index.html` if no token |
-| Conditionally-gated UI | Login button visibility, "Add a Review" section on `place.html`, delete button per review |
-| Identifying the current user | JWT payload decoded client-side (`getUserIdFromToken()`) to compare against a review's `user_id` |
+| Method | Endpoint | Auth required | Used in |
+|---|---|---|---|
+| `POST` | `/api/v1/auth/login` | No | `login.html` |
+| `GET` | `/api/v1/places/` | No | `index.html` |
+| `GET` | `/api/v1/places/<id>` | No | `place.html` |
+| `POST` | `/api/v1/places/` | Yes | `add_place.html` |
+| `GET` | `/api/v1/places/<id>/reviews` | No | `place.html` |
+| `POST` | `/api/v1/reviews/` | Yes | `add_review.html` |
+| `DELETE` | `/api/v1/reviews/<id>` | Yes (author) | `place.html` |
+| `GET` | `/api/v1/amenities/` | No | `add_place.html` |
+| `POST` | `/api/v1/users/` | Yes (admin) | `register.html` |
+| `GET` | `/api/v1/users/<id>` | Yes | `place.html` (resolving a reviewer's name) |
 
-## Setup & Run
+## Setup
 
 ### Prerequisites
-- The Part 2/Part 3 Flask API running locally (this client has no backend of its own).
 
-### Steps
+- A running instance of the Part 3 back-end API (Flask), reachable at
+  `http://127.0.0.1:5000/api/v1` by default.
+- Any modern web browser.
+- (Optional) Python, for serving the static files over HTTP instead of
+  `file://`.
 
-```bash
-# 1. Start the API (from the part2/ or part3/ directory)
-python run.py
-# → serves http://127.0.0.1:5000/api/v1
+### Configuration
 
-# 2. Serve the client (from inside base_model/)
-cd base_model
-python3 -m http.server 8000
-# → open http://localhost:8000/home.html
-
-
-```
-
-The API base URL is hardcoded in `js/script.js`:
+The API base URL is defined in one place, `js/script.js`:
 
 ```js
 const API_URL = 'http://127.0.0.1:5000/api/v1';
 ```
 
-Update this constant if the API runs on a different host or port. Opening the HTML files directly via `file://` also works for quick checks, but a local static server is recommended so relative paths and CORS behave the same as in production.
+Update this value if your API is hosted elsewhere before deploying.
 
-## API Endpoints Used
+### Running the Client
 
-| Method | Endpoint | Auth required | Used by |
-|---|---|---|---|
-| `POST` | `/api/v1/auth/login` | No | `login_script.js` |
-| `GET` | `/api/v1/places/` | No | `places_script.js` |
-| `GET` | `/api/v1/places/<place_id>` | No | `place_details_script.js`, `add_review_script.js` |
-| `GET` | `/api/v1/places/<place_id>/reviews` | No | `place_details_script.js` |
-| `POST` | `/api/v1/reviews/` | Yes | `add_review_script.js` |
-| `DELETE` | `/api/v1/reviews/<review_id>` | Yes (author) | `place_details_script.js` |
+**Option 1 — open directly in the browser**
 
+```bash
+open base_model/home.html
+```
 
-## Tech Notes
+**Option 2 — serve over a local HTTP server (recommended)**
 
-- No external libraries or frameworks — pure HTML/CSS/vanilla JS (ES6), same constraint as the rest of the HBnB project stack.
-- Every CSS file includes a `@media (max-width: 600px)` block for basic responsiveness.
-- Colors, radii, and shadows are centralized as CSS custom properties (`:root` in `styles.css`) and reused across all page-specific stylesheets.
-- `script.js` is intentionally dependency-free and loaded before every page script, since `API_URL`, `getCookie()`, and `getPlaceIdFromURL()` are shared across all pages.
+```bash
+cd base_model
+python3 -m http.server 8000
+```
+
+Then visit `http://localhost:8000/home.html`.
+
+### Seeded Admin Account
+
+To test the admin-only `register.html` page, log in with the admin account
+seeded by the Part 3 back-end:
+
+- **email:** `admin@hbnb.io`
+- **password:** `admin1234`
+
+## Manual Testing Checklist
+
+The client was manually tested against a running Part 3 API instance for the
+following flows:
+
+| Flow | Steps | Expected result |
+|---|---|---|
+| Anonymous browsing | Open `index.html` without logging in | Places load; "Add Place" and "Admin" links stay hidden |
+| Price filter | Select `$50` from the filter dropdown | Only places priced $50 or below remain visible |
+| Login | Submit valid credentials on `login.html` | Redirected to `home.html`; Login link replaced by Logout |
+| Login failure | Submit invalid credentials | Inline error message shown, no redirect |
+| View place details | Click "View Details" on a place card | Gallery, host, price, description, amenities, and reviews render |
+| Add a review | Log in, open a place, submit a review | Redirected back to `place.html`; new review appears |
+| Delete own review | Click the trash icon on a review you authored | Confirmation prompt, then the review is removed |
+| Add a place | Log in, fill out `add_place.html`, submit | Redirected to the new place's `place.html?id=<id>` |
+| Admin add-user | Log in as admin, open `register.html`, submit | New user created, redirected to `home.html` |
+| Non-admin blocked | Log in as a non-admin, open `register.html` | Access message shown instead of the form |
+| Session expiry | Call a protected endpoint with an expired/invalid token | User redirected to `login.html` |
+
+## Notes on Implementation
+
+- The client uses **cookies**, not `localStorage`, to persist the JWT, so
+  the token survives full page reloads across every page (each page is a
+  separate load, not a single-page app).
+- `place.html` fetches the place and its reviews **in parallel** with
+  `Promise.all` to minimize perceived load time.
+- Reviewer names are resolved from the review payload first (`review.user`,
+  `review.user_name`, etc.) and fall back to a `GET /users/<id>` call only
+  when the review response doesn't already include a display name.
+- Amenity icons are matched by keyword (e.g. `pool`, `air conditioning`)
+  with a generic fallback icon (`icon_bath.png`) if no specific image is
+  found for a given amenity name, so newly added amenities never render a
+  broken image.
+- `add_place.html` currently references `images/logo.png`, while the rest of
+  the pages reference `images/logo.svg` — worth unifying in a follow-up
+  cleanup pass.
+- The API base URL (`http://127.0.0.1:5000/api/v1`) is a development
+  default and must be updated before any production deployment.
 
 ## Resources
 
-- [MDN — Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API)
-- [MDN — Using HTTP cookies](https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies)
-- [jwt.io — JWT debugger](https://jwt.io/)
-- [Flask docs](https://flask.palletsprojects.com/)
+- [MDN — Using the Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch)
+- [MDN — Document.cookie](https://developer.mozilla.org/en-US/docs/Web/API/Document/cookie)
+- [JWT.io — Introduction to JSON Web Tokens](https://jwt.io/introduction)
+- [Flask-JWT-Extended docs](https://flask-jwt-extended.readthedocs.io/)
 
 ### Document Authors and Contributors
 
