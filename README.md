@@ -1,256 +1,77 @@
-# HBnB Evolution — Part 4: Simple Web Client
+HBnB Evolution — Technical Documentation & Full-Stack SpecificationHBnB Evolution is an enterprise-grade short-term rental marketplace platform. The project spans architectural design, RESTful API development, object-relational mapping with persistent storage, JWT-based authentication with role-based access control (RBAC), and a responsive static web client interface.Executive SummaryThe platform is designed following a Decoupled Three-Layer Architecture Pattern (Presentation, Business Logic, and Persistence) to guarantee modular separation, maintain strict domain boundary conditions, and support operational scalability.Phase 1 (Architecture & UML): System domain modeling using UML Package, Class, and Sequence diagrams.Phase 2 (Core Domain & API): Object-oriented business model definitions, validation logic, and Flask-RESTx API routing managed via the Facade pattern.Phase 3 (Authentication & Relational Database): MySQL/SQLite integration via SQLAlchemy ORM, cryptographic password hashing, and JWT authorization rules.Phase 4 (Web Client): Static, responsive client-side user interface (HTML5, CSS3, Vanilla JavaScript) utilizing native asynchronous Fetch API integrations.Architecture & Layering Model+-----------------------------------------------------------------------+
+|                         PRESENTATION LAYER                            |
+|    Web Client (HTML/CSS/JS)  <--->  Flask RESTful API (Endpoints)    |
++-----------------------------------│-----------------------------------+
+                                    │
+                         Unidirectional Facade Signals
+                                    │
+                                    ▼
++-----------------------------------------------------------------------+
+|                        BUSINESS LOGIC LAYER                           |
+|       [HBnBFacade] Broker  --->  [User] [Place] [Review] [Amenity]    |
++-----------------------------------│-----------------------------------+
+                                    │
+                     Database Operations Abstraction
+                                    │
+                                    ▼
++-----------------------------------------------------------------------+
+|                         PERSISTENCE LAYER                             |
+|       [SQLAlchemy Repository Engine]  --->  [SQLite / MySQL DB]       |
++-----------------------------------------------------------------------+
+Layer ResponsibilitiesPresentation Layer: Captures network interactions, enforces URI routing, marshals incoming payloads, evaluates client authentication status, and returns structured JSON HTTP payloads.Business Logic Layer: Centralized analytical engine managing entity lifecycles, evaluating validation invariants, and enforcing data model integrity through property setters.Persistence Layer: Abstracts database connections and raw I/O transactions using the Repository Pattern via SQLAlchemy ORM mapping.Project Directory Treehbnb/
+├── part1/                          # Architectural Design & Diagrams
+│   ├── README.md
+│   ├── Package Diagram.md
+│   ├── class diagram.md
+│   └── Sequence Diagrams.md
+│
+├── part2/                          # In-Memory Core & API Prototype
+│   ├── app/
+│   │   ├── api/v1/                 # Flask-RESTx API Endpoints
+│   │   ├── models/                 # Domain Entity Interfaces
+│   │   ├── services/facade.py      # Domain Structural Broker
+│   │   └── persistence/            # Memory Repositories
+│   ├── tests/                      # Automated Model & API Unit Tests
+│   └── run.py
+│
+├── part3/                          # Production API, Database & Auth
+│   ├── app/
+│   │   ├── api/v1/                 # Auth & Resource Controllers
+│   │   ├── models/                 # SQLAlchemy ORM Data Models
+│   │   ├── persistence/            # DB Repository Scripts
+│   │   └── services/facade.py      # Extended Domain Facade
+│   ├── instance/development.db     # Development SQLite Database
+│   ├── tests/                      # Automated Integration Unit Tests
+│   ├── Dockerfile
+│   └── run.py
+│
+└── part4/base_model/               # Front-End Client Application
+    ├── css/                        # Shared & Page Layout Stylesheets
+    ├── js/                         # Vanilla JS Controller Scripts
+    ├── images/                     # System Icons & Assets
+    ├── home.html                   # Platform Landing Page
+    ├── index.html                  # Marketplace Index & Dynamic Price Filter
+    ├── place.html                  # Listing Details & Reviews View
+    ├── add_place.html              # Listing Creation Form
+    ├── add_review.html             # Star-Rating Review Submission Form
+    ├── login.html                  # JWT Authentication Ingress
+    └── register.html               # User Creation Page (Admin Restricted)
+Domain Data Model & Entity RelationsEntity Schema SummaryEntityAttributesBusiness Invariants & ConstraintsBaseModelid (UUIDv4), created_at, updated_atAbstract primary key interface enforcing globally unique UUIDs and lifecycle timestamp updates.Userfirst_name, last_name, email, password, is_adminemail must be unique and follow valid formatting. Passwords are salted and hashed upon initialization.Placetitle, description, price, latitude, longitude, owner_idprice $\ge 0$; latitude range $[-90.0, 90.0]$; longitude range $[-180.0, 180.0]$. Linked to owner (User).Reviewtext, rating, place_id, user_idrating bounded by integer values $[1, 5]$. Foreign key relations enforce valid Place and User associations.Amenityname, descriptionname is mandatory and cannot be empty or null.Relational CardinalityUser $\rightarrow$ Place: One-to-Many ($1:N$). A user can own multiple property listings.User $\rightarrow$ Review: One-to-Many ($1:N$). A user can write multiple reviews.Place $\rightarrow$ Review: One-to-Many ($1:N$). A property listing can accumulate multiple reviews.Place $\leftrightarrow$ Amenity: Many-to-Many ($N:M$). Mapped via the explicit association junction entity PLACE_AMENITY.API Documentation & Auth SpecificationsMain EndpointsMethodURI EndpointAuthenticationAccess ConstraintsPOST/api/v1/auth/loginNonePublic ingress endpoint returning a signed JWT access token.GET/api/v1/places/NoneReturns filtered array list of active property listings.GET/api/v1/places/<id>NoneDelivers full property object details including amenities and reviews.POST/api/v1/places/RequiredAuthenticated account holders can create property listings.PUT/api/v1/places/<id>RequiredReserved strictly for property listing owners (owner_id) or Admins.POST/api/v1/reviews/RequiredAuthenticated users can post property reviews.DELETE/api/v1/reviews/<id>RequiredReserved strictly for review authors (user_id) or Admins.POST/api/v1/users/RequiredAdministrative privilege required (is_admin: true).POST/api/v1/amenities/RequiredAdministrative privilege required (is_admin: true).Local Setup & Container DeploymentLocal Environment SetupClone the repository and enter backend directory:Bashcd part3
+Create and activate Python virtual environment:Bashpython3 -m venv venv
+source venv/bin/activate
+Install dependencies:Bashpip install -r requirements.txt
+Initialize database schema and seed default admin account:Bashflask shell
+Pythonfrom app import db
+db.create_all()
+exit()
+Start backend API server:Bashpython3 run.py
+(Server starts at [http://127.0.0.1:5000/api/v1/](http://127.0.0.1:5000/api/v1/))Docker DeploymentTo build and launch the backend service using Docker:Bash# Build the Docker image
+docker build -t hbnb-api .
 
-This is Part 4 of the HBnB Evolution project. It builds on the RESTful API and
-authentication system implemented in Part 3 by adding a **static front-end
-client** — a set of HTML, CSS, and vanilla JavaScript pages that consume the
-API and provide an interactive, browser-based experience for guests, hosts,
-and administrators.
-
-## Objective
-
-Implement the **client-side interface** of the HBnB application using
-**HTML5, CSS3, and vanilla JavaScript (no frameworks)**, and connect it to
-the back-end API built in previous parts:
-
-- Design and build the core pages: landing page, places listing, place
-  details, login, add place, add review, and add user (admin).
-- Implement client-side authentication using a JWT stored in a cookie.
-- Dynamically fetch and render data from the API using the Fetch API (AJAX),
-  without reloading the page.
-- Apply role-based UI logic (e.g., showing/hiding the "Add Place", "Add
-  Review", and "Admin" links depending on login state and admin status).
-- Ensure the interface is responsive and usable across desktop and mobile
-  viewports.
-
-## Architecture Recap
-
-The client is a purely static front-end that talks to the Part 3 API over
-HTTP:
-
-```
-Browser (HTML/CSS/JS)
-        │
-        │  fetch() — JSON over HTTPS/HTTP
-        ▼
-Presentation Layer (Flask API / /api/v1/...)
-        │
-        ▼
-Business Logic Layer (Facade → User, Place, Review, Amenity)
-        │
-        ▼
-Persistence Layer (SQLite / MySQL)
-```
-
-The client never talks to the database directly — every read or write goes
-through the documented REST endpoints, with the JWT access token attached to
-protected requests via the `Authorization: Bearer <token>` header.
-
-## Project Structure
-
-```
-part4/
-└── base_model/
-    ├── css/
-    │   ├── styles.css               # Shared styles (variables, header, footer, buttons)
-    │   ├── home_styles.css          # Landing page (hero, features, steps, CTA banner)
-    │   ├── admin_nav_styles.css     # "Admin" dropdown in the navigation bar
-    │   ├── forms_styles.css         # Shared form layout (login, register, add_place, add_review)
-    │   ├── register_styles.css      # Success/error messages on the add-user form
-    │   ├── places_styles.css        # Places grid + price filter (index page)
-    │   ├── place_details_styles.css # Place details page + reviews section
-    │   └── add_review_styles.css    # Add-review page (star rating widget)
-    │
-    ├── images/                      # Icons (wifi, bed, bath, trash), logo, favicon
-    │
-    ├── js/
-    │   ├── script.js                 # Shared config/helpers: API_URL, cookies, nav/auth state, admin visibility
-    │   ├── login_script.js           # Login logic (POST /auth/login), stores JWT in a cookie
-    │   ├── register_script.js        # Add-user form (admin only), POST /users/
-    │   ├── places_script.js          # Fetches and renders all places, price filter (index page)
-    │   ├── add_place_script.js       # Add-place form (fetches amenities), POST /places/
-    │   ├── place_details_script.js   # Fetches a place + its reviews, renders gallery, deletes reviews
-    │   └── add_review_script.js      # Submits a new review (text + star rating), POST /reviews/
-    │
-    ├── home.html        # Landing page
-    ├── index.html        # List of all available places, with price filter
-    ├── place.html         # Details of a single place + its reviews
-    ├── add_place.html     # Form to create a new place (requires login)
-    ├── add_review.html    # Form to submit a review for a place (requires login)
-    ├── login.html         # Login form
-    └── register.html       # Form to add a new user (admin only)
-```
-
-## Pages Overview
-
-### `home.html` — Landing Page
-Marketing-style landing page with a hero section, a "Why book with Vibe"
-features grid, a "How it works" steps section, and a call-to-action banner
-linking into the places listing.
-
-### `index.html` — Places List
-Fetches `GET /api/v1/places/` on load and renders each place as a card
-(title, price per night, and a "View Details" link). Includes a client-side
-**max-price filter** (`$10 / $50 / $100 / All`) that shows/hides cards
-without an additional network request.
-
-### `place.html` — Place Details
-Reads the place `id` from the URL query string and fetches:
-- `GET /api/v1/places/<id>` — title, description, price, owner, amenities,
-  and photo gallery.
-- `GET /api/v1/places/<id>/reviews` — the list of reviews for that place.
-
-Reviews are rendered with the reviewer's name, star rating, and comment.
-If the logged-in user authored a review, a delete button is shown, calling
-`DELETE /api/v1/reviews/<id>`. The "Add a Review" link/section is only shown
-to authenticated users.
-
-### `add_place.html` — Add Place
-A form (title, description, price, latitude/longitude, main photo URL,
-additional photo URLs, amenities) that:
-- Loads available amenities via `GET /api/v1/amenities/` and renders them as
-  checkboxes.
-- Submits the new listing via `POST /api/v1/places/` with the JWT attached.
-- Is hidden behind an access message for unauthenticated visitors.
-
-### `add_review.html` — Add Review
-A form with a free-text review field and an interactive **5-star rating
-widget** built with plain buttons and JavaScript (no external library).
-Submits via `POST /api/v1/reviews/` and redirects back to `place.html` on
-success.
-
-### `login.html` — Login
-Submits credentials to `POST /api/v1/auth/login`, stores the returned
-`access_token` in a `token` cookie (`max-age=86400`, 24 hours), and redirects
-to `home.html`.
-
-### `register.html` — Add User (Admin only)
-Only rendered for users whose JWT payload contains `is_admin: true` (decoded
-client-side); everyone else sees an explanatory access message instead of
-the form. Submits to `POST /api/v1/users/` with the admin's token attached.
-
-## Client-Side Authentication
-
-- On login, the JWT returned by the API is stored in a cookie:
-  `document.cookie = "token=<jwt>; path=/; max-age=86400"`.
-- `script.js` exposes `getCookie(name)` to read it back on every page.
-- The JWT payload is decoded client-side (base64) purely to read the
-  `is_admin` claim and toggle UI elements (nav links, forms). This is a
-  **UX convenience only** — the server independently re-validates the token
-  and the admin claim on every protected request; the client never trusts
-  its own decoding for authorization.
-- `refreshNavState()` runs on `DOMContentLoaded` and again on the
-  `pageshow` event (to handle the browser's back/forward cache) to keep
-  Login/Logout, Admin, and Add Place links in sync with the current
-  session.
-
-## API Endpoints Used by the Client
-
-| Method | Endpoint | Auth required | Used in |
-|---|---|---|---|
-| `POST` | `/api/v1/auth/login` | No | `login.html` |
-| `GET` | `/api/v1/places/` | No | `index.html` |
-| `GET` | `/api/v1/places/<id>` | No | `place.html` |
-| `POST` | `/api/v1/places/` | Yes | `add_place.html` |
-| `GET` | `/api/v1/places/<id>/reviews` | No | `place.html` |
-| `POST` | `/api/v1/reviews/` | Yes | `add_review.html` |
-| `DELETE` | `/api/v1/reviews/<id>` | Yes (author) | `place.html` |
-| `GET` | `/api/v1/amenities/` | No | `add_place.html` |
-| `POST` | `/api/v1/users/` | Yes (admin) | `register.html` |
-| `GET` | `/api/v1/users/<id>` | Yes | `place.html` (resolving a reviewer's name) |
-
-## Setup
-
-### Prerequisites
-
-- A running instance of the Part 3 back-end API (Flask), reachable at
-  `http://127.0.0.1:5000/api/v1` by default.
-- Any modern web browser.
-- (Optional) Python, for serving the static files over HTTP instead of
-  `file://`.
-
-### Configuration
-
-The API base URL is defined in one place, `js/script.js`:
-
-```js
-const API_URL = 'http://127.0.0.1:5000/api/v1';
-```
-
-Update this value if your API is hosted elsewhere before deploying.
-
-### Running the Client
-
-**Option 1 — open directly in the browser**
-
-```bash
-open base_model/home.html
-```
-
-**Option 2 — serve over a local HTTP server (recommended)**
-
-```bash
-cd base_model
+# Run the container mapping host port 5000
+docker run -p 5000:5000 hbnb-api
+Client Application AccessTo execute the front-end client, host the part4/base_model/ static files over a local web server:Bashcd part4/base_model
 python3 -m http.server 8000
-```
-
-Then visit `http://localhost:8000/home.html`.
-
-### Seeded Admin Account
-
-To test the admin-only `register.html` page, log in with the admin account
-seeded by the Part 3 back-end:
-
-- **email:** `admin@hbnb.io`
-- **password:** `admin1234`
-
-## Manual Testing Checklist
-
-The client was manually tested against a running Part 3 API instance for the
-following flows:
-
-| Flow | Steps | Expected result |
-|---|---|---|
-| Anonymous browsing | Open `index.html` without logging in | Places load; "Add Place" and "Admin" links stay hidden |
-| Price filter | Select `$50` from the filter dropdown | Only places priced $50 or below remain visible |
-| Login | Submit valid credentials on `login.html` | Redirected to `home.html`; Login link replaced by Logout |
-| Login failure | Submit invalid credentials | Inline error message shown, no redirect |
-| View place details | Click "View Details" on a place card | Gallery, host, price, description, amenities, and reviews render |
-| Add a review | Log in, open a place, submit a review | Redirected back to `place.html`; new review appears |
-| Delete own review | Click the trash icon on a review you authored | Confirmation prompt, then the review is removed |
-| Add a place | Log in, fill out `add_place.html`, submit | Redirected to the new place's `place.html?id=<id>` |
-| Admin add-user | Log in as admin, open `register.html`, submit | New user created, redirected to `home.html` |
-| Non-admin blocked | Log in as a non-admin, open `register.html` | Access message shown instead of the form |
-| Session expiry | Call a protected endpoint with an expired/invalid token | User redirected to `login.html` |
-
-## Notes on Implementation
-
-- The client uses **cookies**, not `localStorage`, to persist the JWT, so
-  the token survives full page reloads across every page (each page is a
-  separate load, not a single-page app).
-- `place.html` fetches the place and its reviews **in parallel** with
-  `Promise.all` to minimize perceived load time.
-- Reviewer names are resolved from the review payload first (`review.user`,
-  `review.user_name`, etc.) and fall back to a `GET /users/<id>` call only
-  when the review response doesn't already include a display name.
-- Amenity icons are matched by keyword (e.g. `pool`, `air conditioning`)
-  with a generic fallback icon (`icon_bath.png`) if no specific image is
-  found for a given amenity name, so newly added amenities never render a
-  broken image.
-- `add_place.html` currently references `images/logo.png`, while the rest of
-  the pages reference `images/logo.svg` — worth unifying in a follow-up
-  cleanup pass.
-- The API base URL (`http://127.0.0.1:5000/api/v1`) is a development
-  default and must be updated before any production deployment.
-
-## Resources
-
-- [MDN — Using the Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch)
-- [MDN — Document.cookie](https://developer.mozilla.org/en-US/docs/Web/API/Document/cookie)
-- [JWT.io — Introduction to JSON Web Tokens](https://jwt.io/introduction)
-- [Flask-JWT-Extended docs](https://flask-jwt-extended.readthedocs.io/)
-
-### Document Authors and Contributors
-
-- Lama Almazroa - [@l44mz](https://github.com/l44mz)
-- Noura Alotibi - [@nnnsss12](https://github.com/nnnsss12)
-- Shahad Alharbi - [@shahadeissaalharbi](https://github.com/shahadeissaalharbi)
+Access the marketplace interface in your browser at:http://localhost:8000/home.htmlDefault Admin CredentialsEmail: admin@hbnb.ioPassword: admin1234Quality Assurance & Automated TestingAutomated test cases validate domain integrity, data boundaries, and API authorization checks across all layers using Python's native unittest runner.Execute the test suites across the repository components:Bash# Run backend model and API unit tests
+python3 -m unittest discover tests
+Test Coverage ScenariosDomain Invariants: Verification of coordinate ranges, non-negative pricing validation, and rating boundary checks ($1$ to $5$).Access Control: Asserting HTTP 403 Forbidden errors when non-authorized user tokens attempt payload updates against resources owned by external accounts.Authentication Integrity: Validating access rejection with HTTP 401 Unauthorized for expired or missing JWT bearer header structures.Authors & AcknowledgmentsThis platform is developed as part of the Holberton Academy Software Engineering Curriculum.Lama Almazroa — @l44mzNoura Alotibi — @nnnsss12Shahad Alharbi — @shahadeissaalharbi
